@@ -169,22 +169,32 @@
         <div id="tab-banner" class="space-y-8 hidden">
             <!-- Form Tambah Banner -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-2xl mx-auto">
-                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website</h2>
-                <p class="text-xs text-gray-500 mb-6">Tambahkan banner promosi atau pengumuman yang akan tampil di halaman utama toko.</p>
+                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website & Mobile</h2>
+                <p class="text-xs text-gray-500 mb-6">Upload gambar terpisah agar tampilan banner pas di Laptop/PC maupun HP.</p>
 
                 <form id="banner-form" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Nama Banner / Keterangan</label>
-                        <input type="text" id="banner-name" placeholder="Contoh: Special Sneaker Drop Bulan Ini" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <input type="text" id="banner-name" placeholder="Contoh: Authentic Collection" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                     </div>
 
+                    <!-- Banner Desktop -->
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Upload Gambar Banner</label>
-                        <input type="file" id="banner-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
-                        <input type="hidden" id="banner-image-url">
-                        <!-- Panduan Ukuran Fix -->
-                        <div class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
-                            <span class="font-bold">⚠️ Panduan Ukuran Fix Banner:</span> Resolusi ideal yang disarankan adalah <strong class="underline">1200 x 400 piksel</strong> (Rasio 3:1) dengan format JPG/PNG agar pas dan tidak terpotong di website.
+                        <label class="block text-xs font-semibold uppercase mb-1">1. Gambar Banner Desktop (PC/Laptop)</label>
+                        <input type="file" id="banner-desktop-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
+                        <input type="hidden" id="banner-desktop-url">
+                        <div class="mt-1.5 p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-[11px] text-blue-800">
+                            📐 <strong>Ukuran Fix Desktop:</strong> <code class="font-bold">1200 x 400 px</code> (Rasio 3:1)
+                        </div>
+                    </div>
+
+                    <!-- Banner Mobile -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">2. Gambar Banner Mobile (HP)</label>
+                        <input type="file" id="banner-mobile-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
+                        <input type="hidden" id="banner-mobile-url">
+                        <div class="mt-1.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-800">
+                            📱 <strong>Ukuran Fix Mobile:</strong> <code class="font-bold">600 x 700 px</code> (Rasio Kotak/Potret agar pas di layar HP)
                         </div>
                     </div>
 
@@ -196,7 +206,7 @@
                         </select>
                     </div>
 
-                    <button type="submit" id="banner-submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Tambah Banner</button>
+                    <button type="submit" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Simpan & Tambah Banner</button>
                 </form>
                 <p id="banner-status-msg" class="text-center text-xs mt-3 font-medium"></p>
             </div>
@@ -204,20 +214,21 @@
             <!-- Daftar Banner yang Sudah Terpasang -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold mb-1">Daftar Banner Terpasang</h2>
-                <p class="text-xs text-gray-500 mb-6">Atur status aktif/nonaktif atau hapus banner yang sudah ada.</p>
+                <p class="text-xs text-gray-500 mb-6">Melihat preview desktop & mobile secara berdampingan, ubah status, atau hapus banner.</p>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
-                                <th class="p-3">Preview</th>
+                                <th class="p-3">Preview Desktop</th>
+                                <th class="p-3">Preview Mobile</th>
                                 <th class="p-3">Nama Banner</th>
                                 <th class="p-3">Status</th>
                                 <th class="p-3 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="banner-list">
-                            <tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
+                            <tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -337,8 +348,7 @@
                     const ctx = canvas.getContext("2d");
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
-                    inputImageUrl.value = compressedDataUrl;
+                    inputImageUrl.value = canvas.toDataURL("image/jpeg", 0.7);
                     updatePreview();
                 };
                 img.src = event.target.result;
@@ -519,40 +529,63 @@
         }
 
         // ================= SCRIPT BANNER SETTINGS =================
-        const bannerFileInput = document.getElementById("banner-file");
-        const bannerImageUrlInput = document.getElementById("banner-image-url");
+        const bannerDesktopFile = document.getElementById("banner-desktop-file");
+        const bannerDesktopUrlInput = document.getElementById("banner-desktop-url");
+        const bannerMobileFile = document.getElementById("banner-mobile-file");
+        const bannerMobileUrlInput = document.getElementById("banner-mobile-url");
 
-        bannerFileInput.addEventListener("change", function(e) {
+        // Kompres Desktop (1200x400)
+        bannerDesktopFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement("canvas");
-                    const MAX_WIDTH = 1200;
-                    const MAX_HEIGHT = 400;
-                    let width = img.width;
-                    let height = img.height;
-
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = MAX_HEIGHT;
+                    canvas.width = 1200;
+                    canvas.height = 400;
                     const ctx = canvas.getContext("2d");
-                    
                     ctx.fillStyle = "#FFFFFF";
-                    ctx.fillRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
+                    ctx.fillRect(0, 0, 1200, 400);
 
-                    let hRatio = MAX_WIDTH / width;
-                    let vRatio = MAX_HEIGHT / height;
+                    let hRatio = 1200 / img.width;
+                    let vRatio = 400 / img.height;
                     let ratio = Math.max(hRatio, vRatio);
-                    let centerShift_x = (MAX_WIDTH - width * ratio) / 2;
-                    let centerShift_y = (MAX_HEIGHT - height * ratio) / 2;
+                    let centerShift_x = (1200 - img.width * ratio) / 2;
+                    let centerShift_y = (400 - img.height * ratio) / 2;
 
-                    ctx.drawImage(img, 0, 0, width, height, centerShift_x, centerShift_y, width * ratio, height * ratio);
+                    ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+                    bannerDesktopUrlInput.value = canvas.toDataURL("image/jpeg", 0.8);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
 
-                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
-                    bannerImageUrlInput.value = compressedDataUrl;
+        // Kompres Mobile (600x700)
+        bannerMobileFile.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = 600;
+                    canvas.height = 700;
+                    const ctx = canvas.getContext("2d");
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, 600, 700);
+
+                    let hRatio = 600 / img.width;
+                    let vRatio = 700 / img.height;
+                    let ratio = Math.max(hRatio, vRatio);
+                    let centerShift_x = (600 - img.width * ratio) / 2;
+                    let centerShift_y = (700 - img.height * ratio) / 2;
+
+                    ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+                    bannerMobileUrlInput.value = canvas.toDataURL("image/jpeg", 0.8);
                 };
                 img.src = event.target.result;
             };
@@ -562,13 +595,13 @@
         function getBannersLocal() {
             try {
                 let banners = JSON.parse(localStorage.getItem("diremar_banners"));
-                // Jika localStorage kosong, otomatis masukkan banner default yang sedang tampil di halaman utama
                 if (!banners) {
                     banners = [
                         {
                             id: 1710000000001,
-                            name: "Special Sneaker Drop Bulan Ini",
-                            image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff", // Ganti URL ini jika menggunakan gambar lokal Anda sendiri
+                            name: "Authentic Collection",
+                            desktop_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+                            mobile_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
                             status: "active"
                         }
                     ];
@@ -590,7 +623,7 @@
             document.getElementById("banner-count").textContent = banners.length;
 
             if (banners.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>`;
                 return;
             }
 
@@ -600,7 +633,12 @@
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 w-36">
                             <div class="w-32 h-12 bg-gray-100 rounded overflow-hidden border">
-                                <img src="${b.image_url}" class="w-full h-full object-cover" alt="Banner">
+                                <img src="${b.desktop_url || b.image_url}" class="w-full h-full object-cover" alt="Desktop Banner">
+                            </div>
+                        </td>
+                        <td class="p-3 w-28">
+                            <div class="w-16 h-16 bg-gray-100 rounded overflow-hidden border mx-auto">
+                                <img src="${b.mobile_url || b.desktop_url || b.image_url}" class="w-full h-full object-cover" alt="Mobile Banner">
                             </div>
                         </td>
                         <td class="p-3 font-bold text-gray-900">${b.name}</td>
@@ -621,12 +659,13 @@
         document.getElementById("banner-form").addEventListener("submit", (e) => {
             e.preventDefault();
             const name = document.getElementById("banner-name").value;
-            const imageUrl = bannerImageUrlInput.value;
+            const desktopUrl = bannerDesktopUrlInput.value;
+            const mobileUrl = bannerMobileUrlInput.value;
             const status = document.getElementById("banner-status").value;
             const msg = document.getElementById("banner-status-msg");
 
-            if (!imageUrl) {
-                alert("Silakan pilih gambar banner terlebih dahulu!");
+            if (!desktopUrl || !mobileUrl) {
+                alert("Harap pilih gambar untuk Desktop dan Mobile!");
                 return;
             }
 
@@ -634,7 +673,8 @@
             banners.push({
                 id: Date.now(),
                 name: name,
-                image_url: imageUrl,
+                desktop_url: desktopUrl,
+                mobile_url: mobileUrl,
                 status: status
             });
 
@@ -645,7 +685,8 @@
             msg.className = "text-center text-xs mt-3 font-medium text-green-600";
             
             document.getElementById("banner-form").reset();
-            bannerImageUrlInput.value = "";
+            bannerDesktopUrlInput.value = "";
+            bannerMobileUrlInput.value = "";
 
             setTimeout(() => { msg.textContent = ""; }, 3000);
         });
