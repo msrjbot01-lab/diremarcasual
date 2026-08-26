@@ -168,27 +168,24 @@
         let activeBanners = [];
         let slideInterval;
 
-        // Mengambil data banner langsung dari Cloud API (bukan localStorage)
         async function fetchBanners() {
             try {
                 const response = await fetch(`${API_BASE}/banners`);
                 if (!response.ok) throw new Error("Gagal mengambil banner");
                 const data = await response.json();
                 
-                // Menyaring banner yang berstatus aktif
-                activeBanners = data.filter(b => b.status === 'active');
+                activeBanners = Array.isArray(data) ? data.filter(b => b.status === 'active' || !b.status) : [];
             } catch (error) {
                 console.error("Gagal memuat banner dari server:", error);
                 activeBanners = [];
             }
 
-            // Fallback default jika database banner masih kosong
             if (activeBanners.length === 0) {
                 activeBanners = [
                     {
-                        name: "Special Sneaker Drop",
-                        desktop_url: "logo01.webp",
-                        mobile_url: "logo01.webp"
+                        title: "Special Sneaker Drop",
+                        image: "logo01.webp",
+                        link: "#katalog"
                     }
                 ];
             }
@@ -199,17 +196,19 @@
         function renderBanners() {
             const slider = document.getElementById('bannerSlider');
             const dotsContainer = document.getElementById('sliderDots');
-            const isMobile = window.innerWidth <= 768;
+            
+            if (!slider) return;
             
             let slidesHtml = '';
             let dotsHtml = '';
 
             activeBanners.forEach((banner, idx) => {
-                const imageUrl = isMobile ? (banner.mobile_url || banner.desktop_url) : banner.desktop_url;
+                const imageUrl = banner.image || banner.desktop_url || "logo01.webp";
+                const bannerTitle = banner.title || banner.name || 'Banner';
                 
                 slidesHtml += `
                     <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="${imageUrl}" alt="${banner.name || 'Banner'}" class="w-full h-full object-cover">
+                        <img src="${imageUrl}" alt="${bannerTitle}" class="w-full h-full object-cover">
                     </div>
                 `;
 
@@ -219,7 +218,7 @@
             });
 
             slider.innerHTML = slidesHtml;
-            dotsContainer.innerHTML = dotsHtml;
+            if (dotsContainer) dotsContainer.innerHTML = dotsHtml;
             
             if (slideInterval) clearInterval(slideInterval);
             if (activeBanners.length > 1) {
@@ -233,11 +232,14 @@
 
             slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
             
-            const dots = document.getElementById('sliderDots').children;
-            for (let i = 0; i < dots.length; i++) {
-                dots[i].className = i === currentSlideIndex 
-                    ? "w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white transition cursor-pointer" 
-                    : "w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white/40 transition cursor-pointer";
+            const dotsContainer = document.getElementById('sliderDots');
+            if (dotsContainer) {
+                const dots = dotsContainer.children;
+                for (let i = 0; i < dots.length; i++) {
+                    dots[i].className = i === currentSlideIndex 
+                        ? "w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white transition cursor-pointer" 
+                        : "w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white/40 transition cursor-pointer";
+                }
             }
         }
 
