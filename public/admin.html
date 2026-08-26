@@ -3,84 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Diremar Casual</title>
+    <title>Master Control Admin - Diremar Casual</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-950 font-sans flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
+
+    <!-- Navbar Admin -->
+    <header class="bg-black text-white py-4 px-6 shadow-md flex justify-between items-center">
+        <h1 class="font-bold text-lg tracking-wider">DIREMAR CASUAL // MASTER CONTROL</h1>
+        <div class="flex items-center gap-4">
+            <a href="index.html" target="_blank" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded transition">Lihat Toko</a>
+            <button onclick="logout()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded transition font-semibold">Logout</button>
+        </div>
+    </header>
 
     <!-- KOTAK LOGIN -->
-    <div id="login-section" class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
-        <h2 class="text-2xl font-bold mb-2 text-center">Admin Restricted</h2>
-        <p class="text-xs text-gray-500 text-center mb-6">Masukkan kredensial master untuk mengontrol website.</p>
-        
-        <form id="login-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-semibold mb-1">Username</label>
-                <input type="text" id="username" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-1">Password</label>
-                <input type="password" id="password" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
-            </div>
-            <button type="submit" class="w-full bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm">Login</button>
-        </form>
-        <p id="login-msg" class="text-center text-xs mt-3 font-medium text-red-500"></p>
-        <div class="text-center mt-6">
-            <a href="index.html" class="text-xs text-blue-600 hover:underline">&larr; Kembali ke Beranda Toko</a>
+    <div id="login-section" class="flex items-center justify-center min-h-[80vh] p-4">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
+            <h2 class="text-2xl font-bold mb-2 text-center">Admin Restricted</h2>
+            <p class="text-xs text-gray-500 text-center mb-6">Masukkan kredensial untuk mengakses panel master.</p>
+            
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Username</label>
+                    <input type="text" id="username" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Password</label>
+                    <input type="password" id="password" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                </div>
+                <button type="submit" class="w-full bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm">Login</button>
+            </form>
+            <p id="login-msg" class="text-center text-xs mt-3 font-medium text-red-500"></p>
         </div>
     </div>
 
-    <!-- KOTAK PANEL UPLOAD PRODUK (TERSEMBUNYI SEBELUM LOGIN) -->
-    <div id="dashboard-section" class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg border border-gray-200 hidden">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Master Control Upload</h2>
-            <button onclick="logout()" class="text-xs bg-red-100 text-red-600 px-3 py-1.5 rounded font-semibold hover:bg-red-200 transition">Logout</button>
+    <!-- DASHBOARD UTAMA (TERSEMBUNYI SEBELUM LOGIN) -->
+    <div id="dashboard-section" class="max-w-7xl mx-auto p-4 md:p-8 hidden">
+        
+        <!-- Tab Navigasi Admin -->
+        <div class="flex border-b border-gray-300 mb-6 gap-4">
+            <button onclick="switchTab('upload')" id="tab-upload-btn" class="py-2 px-4 font-bold text-sm border-b-2 border-black transition">Tambah Barang Baru</button>
+            <button onclick="switchTab('stock')" id="tab-stock-btn" class="py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition">Menu Stok & Inventaris (<span id="stock-count">0</span>)</button>
         </div>
 
-        <form id="product-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-semibold mb-1">Nama Sneakers</label>
-                <input type="text" id="name" placeholder="Contoh: Nike Air Force 1 Casual" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
-            </div>
+        <!-- MENU 1: TAMBAH BARANG -->
+        <div id="tab-upload" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-2xl mx-auto">
+            <h2 class="text-xl font-bold mb-6">Form Upload Produk Sneakers</h2>
             
-            <div class="grid grid-cols-2 gap-4">
+            <form id="product-form" class="space-y-4">
+                <input type="hidden" id="edit-id">
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Harga (Rp)</label>
-                    <input type="number" id="price" placeholder="450000" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    <label class="block text-xs font-semibold uppercase mb-1">Nama Sneakers</label>
+                    <input type="text" id="name" placeholder="Contoh: Nike Air Force 1" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                 </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Kondisi Produk</label>
+                        <select id="condition" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
+                            <option value="New">New (Baru)</option>
+                            <option value="Preloved">Preloved (Bekas)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Harga (Rp)</label>
+                        <input type="number" id="price" placeholder="450000" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Diskon (%) - Opsional</label>
+                        <input type="number" id="discount" value="0" min="0" max="100" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Size / Ukuran Tersedia</label>
+                        <input type="text" id="sizes" placeholder="Contoh: 40, 41, 42, 43" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Diskon (%) - Opsional</label>
-                    <input type="number" id="discount" value="0" min="0" max="100" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    <label class="block text-xs font-semibold uppercase mb-1">Link Foto Produk (URL)</label>
+                    <input type="url" id="image_url" placeholder="https://images.unsplash.com/..." required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase mb-1">Deskripsi & Informasi Produk</label>
+                    <textarea id="description" rows="3" placeholder="Kondisi mulus, box original lengkap, pemakaian wajar..." class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Upload ke Website</button>
+            </form>
+            <p id="status-msg" class="text-center text-xs mt-3 font-medium"></p>
+        </div>
+
+        <!-- MENU 2: STOK & INVENTARIS BARANG -->
+        <div id="tab-stock" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-bold">Menu Stok & Master Inventaris</h2>
+                    <p class="text-xs text-gray-500">Kelola seluruh barang yang aktif di website. Hapus jika sudah habis atau edit jika ada perubahan harga/keterangan.</p>
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-semibold mb-1">Link Gambar (URL)</label>
-                <input type="url" id="image_url" placeholder="https://images.unsplash.com/photo-..." required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
+                            <th class="p-3">Produk</th>
+                            <th class="p-3">Kondisi</th>
+                            <th class="p-3">Harga & Diskon</th>
+                            <th class="p-3">Size</th>
+                            <th class="p-3 text-center">Aksi (Edit / Hapus)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-product-list">
+                        <tr>
+                            <td colspan="5" class="p-6 text-center text-gray-400">Belum ada produk di stok.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <div>
-                <label class="block text-sm font-semibold mb-1">Deskripsi / Ukuran</label>
-                <textarea id="description" rows="3" placeholder="Ready Size 40-44, Include Box" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
-            </div>
-
-            <button type="submit" class="w-full bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm">Upload Produk ke Toko</button>
-        </form>
-        <p id="status-msg" class="text-center text-sm mt-4 font-medium"></p>
     </div>
 
     <script>
-        // ATUR USERNAME DAN PASSWORD ADMIN DI SINI
+        // Konfigurasi Login
         const ADMIN_USER = "marie";
-        const ADMIN_PASS = "diremar2026"; // Kamu bisa ganti passwordnya
+        const ADMIN_PASS = "diremar2026";
 
         const loginSection = document.getElementById("login-section");
         const dashboardSection = document.getElementById("dashboard-section");
 
-        // Cek apakah sudah login sebelumnya di browser ini
         if (sessionStorage.getItem("isLoggedIn") === "true") {
             loginSection.classList.add("hidden");
             dashboardSection.classList.remove("hidden");
+            loadStockProducts();
         }
 
         document.getElementById("login-form").addEventListener("submit", (e) => {
@@ -93,6 +153,7 @@
                 sessionStorage.setItem("isLoggedIn", "true");
                 loginSection.classList.add("hidden");
                 dashboardSection.classList.remove("hidden");
+                loadStockProducts();
             } else {
                 msg.textContent = "Username atau Password salah!";
             }
@@ -103,12 +164,146 @@
             location.reload();
         }
 
+        // Navigasi Tab Admin
+        function switchTab(tab) {
+            const tabUpload = document.getElementById("tab-upload");
+            const tabStock = document.getElementById("tab-stock");
+            const btnUpload = document.getElementById("tab-upload-btn");
+            const btnStock = document.getElementById("tab-stock-btn");
+
+            if (tab === 'upload') {
+                tabUpload.classList.remove("hidden");
+                tabStock.classList.add("hidden");
+                btnUpload.className = "py-2 px-4 font-bold text-sm border-b-2 border-black transition";
+                btnStock.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition";
+            } else {
+                tabUpload.classList.add("hidden");
+                tabStock.classList.remove("hidden");
+                btnStock.className = "py-2 px-4 font-bold text-sm border-b-2 border-black transition";
+                btnUpload.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition";
+                loadStockProducts();
+            }
+        }
+
+        // Penyimpanan Lokal
+        function getLocalProducts() {
+            return JSON.parse(localStorage.getItem("diremar_products")) || [];
+        }
+
+        function saveLocalProducts(products) {
+            localStorage.setItem("diremar_products", JSON.stringify(products));
+        }
+
+        // Handle Form Submit (Tambah atau Update Produk)
         document.getElementById("product-form").addEventListener("submit", (e) => {
             e.preventDefault();
             const msg = document.getElementById("status-msg");
-            msg.textContent = "Simulasi berhasil! Halaman admin sudah siap terhubung ke backend nanti.";
-            msg.className = "text-center text-sm mt-4 font-medium text-green-600";
+            const editId = document.getElementById("edit-id").value;
+
+            const productData = {
+                id: editId ? parseInt(editId) : Date.now(),
+                name: document.getElementById("name").value,
+                condition: document.getElementById("condition").value,
+                price: parseFloat(document.getElementById("price").value),
+                discount: parseFloat(document.getElementById("discount").value) || 0,
+                sizes: document.getElementById("sizes").value,
+                image_url: document.getElementById("image_url").value,
+                description: document.getElementById("description").value
+            };
+
+            let products = getLocalProducts();
+
+            if (editId) {
+                // Update produk yang sudah ada
+                products = products.map(p => p.id === parseInt(editId) ? productData : p);
+                document.getElementById("edit-id").value = "";
+                document.getElementById("submit-btn").textContent = "Upload ke Website";
+                msg.textContent = "Produk berhasil diperbarui!";
+            } else {
+                // Tambah produk baru di urutan teratas
+                products.unshift(productData);
+                msg.textContent = "Produk berhasil di-upload dan langsung tayang di website!";
+            }
+
+            saveLocalProducts(products);
+            msg.className = "text-center text-xs mt-3 font-medium text-green-600";
+            
+            document.getElementById("product-form").reset();
+            loadStockProducts();
+
+            setTimeout(() => { msg.textContent = ""; }, 3000);
         });
+
+        // Muat Data ke Menu Stok
+        function loadStockProducts() {
+            const products = getLocalProducts();
+            const tbody = document.getElementById("stock-product-list");
+            document.getElementById("stock-count").textContent = products.length;
+
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada barang di menu stok.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            products.forEach(p => {
+                let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-100 text-amber-800";
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-3 flex items-center gap-3">
+                            <img src="${p.image_url}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
+                            <div>
+                                <p class="font-bold text-gray-900">${p.name}</p>
+                                <p class="text-xs text-gray-500 line-clamp-1">${p.description || '-'}</p>
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${p.condition}</span>
+                        </td>
+                        <td class="p-3">
+                            <p class="font-bold">Rp ${p.price.toLocaleString()}</p>
+                            ${p.discount > 0 ? `<span class="text-xs text-red-600 font-semibold">Disc ${p.discount}%</span>` : ''}
+                        </td>
+                        <td class="p-3 text-xs font-semibold text-gray-700">
+                            Size: ${p.sizes}
+                        </td>
+                        <td class="p-3 text-center space-x-2">
+                            <button onclick="editProduct(${p.id})" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
+                            <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Fungsi Edit Produk (Masuk ke form dan isi otomatis)
+        function editProduct(id) {
+            const products = getLocalProducts();
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById("edit-id").value = p.id;
+            document.getElementById("name").value = p.name;
+            document.getElementById("condition").value = p.condition;
+            document.getElementById("price").value = p.price;
+            document.getElementById("discount").value = p.discount;
+            document.getElementById("sizes").value = p.sizes;
+            document.getElementById("image_url").value = p.image_url;
+            document.getElementById("description").value = p.description;
+
+            document.getElementById("submit-btn").textContent = "Simpan Perubahan";
+            switchTab('upload'); // Pindah ke tab form upload untuk mengedit
+        }
+
+        // Fungsi Hapus Produk dari Stok
+        function deleteProduct(id) {
+            if (confirm("Apakah barang ini sudah habis dan ingin dihapus permanen dari toko?")) {
+                let products = getLocalProducts();
+                products = products.filter(p => p.id !== id);
+                saveLocalProducts(products);
+                loadStockProducts();
+            }
+        }
     </script>
 
 </body>
