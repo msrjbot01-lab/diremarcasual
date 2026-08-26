@@ -4,13 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Master Control Admin - Diremar Casual</title>
+    
+    <!-- FAVICON & WEB LOGO -->
+    <link rel="icon" type="image/webp" href="favicon.webp">
+    <link rel="shortcut icon" href="favicon.webp" type="image/webp">
+    <link rel="apple-touch-icon" href="favicon.webp">
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
 
     <!-- Navbar Admin -->
     <header class="bg-black text-white py-4 px-6 shadow-md flex justify-between items-center">
-        <h1 class="font-bold text-lg tracking-wider">DIREMAR CASUAL // MASTER CONTROL</h1>
+        <div class="flex items-center space-x-3">
+            <img src="logo01.webp" alt="Diremar Casual Logo" class="h-8 sm:h-10 w-auto object-contain">
+            <h1 class="font-bold text-sm sm:text-lg tracking-wider">DIREMAR CASUAL // MASTER CONTROL</h1>
+        </div>
         <div class="flex items-center gap-4">
             <a href="index.html" target="_blank" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded transition">Lihat Toko</a>
             <button id="logout-btn" onclick="logout()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded transition font-semibold hidden">Logout</button>
@@ -696,7 +705,6 @@
             if (banners[index]) {
                 banners[index].status = newStatus;
                 saveBannersLocal(banners);
-                // Cukup simpan ke localStorage tanpa memanggil loadBanners() ulang agar select tidak kehilangan fokus
             }
         }
 
