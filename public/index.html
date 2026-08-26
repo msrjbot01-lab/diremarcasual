@@ -29,7 +29,7 @@
                 </span>
             </div>
             
-            <!-- SEARCH BAR DI POSISI AUTHENTIC & SELECTED SNEAKERS -->
+            <!-- SEARCH BAR -->
             <div class="relative w-48 sm:w-64">
                 <input type="text" id="searchInput" placeholder="Cari sneakers..." class="w-full bg-[#18181b]/90 border border-gray-700/80 rounded-full px-4 py-2 pl-9 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 transition shadow-lg">
                 <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -39,12 +39,11 @@
         <!-- HERO SECTION & BANNER SLIDER -->
         <section class="py-12 px-4 text-center">
             <div class="max-w-3xl mx-auto mb-8">
-                <span class="text-[10px] sm:text-xs font-bold tracking-widest text-amber-400 uppercase bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">New Collection 2026</span>
-                <h1 class="text-3xl sm:text-5xl font-black tracking-tight mt-3 mb-3 text-white uppercase leading-tight">
+                <h1 class="text-3xl sm:text-5xl font-black tracking-tight mb-3 text-white uppercase leading-tight">
                     LANGKAH PASTI, GAYA BERKELAS
                 </h1>
                 <p class="text-gray-400 text-xs sm:text-sm max-w-lg mx-auto font-normal leading-relaxed">
-                    Temukan koleksi sneakers original dan preloved pilihan dengan kualitas terbaik, siap menyempurnakan setiap langkahmu.
+                    Temukan koleksi sneakers original baru dan preloved pilihan dengan kualitas terbaik, siap menyempurnakan setiap langkahmu.
                 </p>
             </div>
 
@@ -169,7 +168,7 @@
 
         // Slider Logic
         let currentSlideIndex = 0;
-        const totalSlides = 2; // Sesuaikan dengan jumlah banner slide nantinya
+        const totalSlides = 2;
 
         function updateSlider() {
             const slider = document.getElementById('bannerSlider');
@@ -196,10 +195,8 @@
             updateSlider();
         }
 
-        // Auto slide setiap 5 detik
         setInterval(nextSlide, 5000);
 
-        // Fetch Produk Katalog
         async function fetchProducts() {
             try {
                 const response = await fetch(API_URL);
@@ -262,14 +259,12 @@
             });
         }
 
-        // Filter Pencarian
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = allProducts.filter(p => p.name.toLowerCase().includes(keyword));
             renderProducts(filtered);
         });
 
-        // Modal Handler
         function openModal(p) {
             const rawPrice = parseFloat(p.price) || 0;
             const discount = parseFloat(p.discount) || 0;
