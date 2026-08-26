@@ -13,7 +13,6 @@
         <h1 class="font-bold text-lg tracking-wider">DIREMAR CASUAL // MASTER CONTROL</h1>
         <div class="flex items-center gap-4">
             <a href="index.html" target="_blank" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded transition">Lihat Toko</a>
-            <!-- Tombol Logout tersembunyi secara default sebelum login -->
             <button id="logout-btn" onclick="logout()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded transition font-semibold hidden">Logout</button>
         </div>
     </header>
@@ -39,7 +38,7 @@
         </div>
     </div>
 
-    <!-- DASHBOARD UTAMA (TERSEMBUNYI SEBELUM LOGIN) -->
+    <!-- DASHBOARD UTAMA -->
     <div id="dashboard-section" class="max-w-7xl mx-auto p-4 md:p-8 hidden">
         
         <!-- Tab Navigasi Admin -->
@@ -48,15 +47,16 @@
             <button onclick="switchTab('stock')" id="tab-stock-btn" class="py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition">Menu Stok & Inventaris (<span id="stock-count">0</span>)</button>
         </div>
 
-        <!-- MENU 1: TAMBAH BARANG & LIVE PREVIEW -->
+        <!-- MENU 1: TAMBAH BARANG & PREVIEW -->
         <div id="tab-upload" class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start max-w-5xl mx-auto">
             
-            <!-- Form Input -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold mb-6">Form Upload Produk Sneakers</h2>
                 
                 <form id="product-form" class="space-y-4">
                     <input type="hidden" id="edit-id">
+                    <input type="hidden" id="image_url"> <!-- Menyimpan data string gambar -->
+
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Nama Sneakers</label>
                         <input type="text" id="name" placeholder="Contoh: Nike Air Force 1" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
@@ -87,9 +87,11 @@
                         </div>
                     </div>
 
+                    <!-- UPLOAD FILE DARI PENYAKITAN / GALERI -->
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Link Foto Produk (URL)</label>
-                        <input type="url" id="image_url" placeholder="https://images.unsplash.com/..." required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <label class="block text-xs font-semibold uppercase mb-1">Pilih Foto Produk dari Perangkat</label>
+                        <input type="file" id="image-file" accept="image/*" class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
+                        <p class="text-[10px] text-gray-400 mt-1">Format yang didukung: JPG, PNG, WEBP.</p>
                     </div>
 
                     <div>
@@ -131,7 +133,6 @@
                     </div>
                 </div>
 
-                <!-- Kalkulator Diskon Ringkas -->
                 <div class="mt-4 p-3 bg-zinc-50 border rounded-lg text-xs space-y-1">
                     <div class="flex justify-between"><span class="text-gray-500">Harga Asli:</span><span id="calc-orig" class="font-semibold">Rp 0</span></div>
                     <div class="flex justify-between"><span class="text-gray-500">Potongan Diskon:</span><span id="calc-disc" class="font-semibold text-red-600">Rp 0</span></div>
@@ -144,7 +145,7 @@
         <!-- MENU 2: STOK & INVENTARIS BARANG -->
         <div id="tab-stock" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 hidden">
             <h2 class="text-xl font-bold mb-1">Menu Stok & Master Inventaris</h2>
-            <p class="text-xs text-gray-500 mb-6">Kelola seluruh barang yang tersimpan di GitHub repository.</p>
+            <p class="text-xs text-gray-500 mb-6">Kelola seluruh barang langsung dari penyimpanan GitHub.</p>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
@@ -168,9 +169,9 @@
 
     <script>
         // ⚠️ UBAH URL DI BAWAH INI DENGAN URL CLOUDFLARE WORKER MILIKMU SENDIRI
-        const API_URL = "https://round-surf-5635.trbmaster.workers.dev/";
+        const API_URL = "https://diremar-api.namakamu.workers.dev/api/products";
 
-        const ADMIN_USER = "marie";
+        const ADMIN_USER = "admin";
         const ADMIN_PASS = "diremar2026";
 
         const loginSection = document.getElementById("login-section");
@@ -226,14 +227,28 @@
             }
         }
 
-        // Live Preview Logic
+        // Live Preview & Image Converter Logic
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
         const inputPrice = document.getElementById("price");
         const inputDiscount = document.getElementById("discount");
         const inputSizes = document.getElementById("sizes");
+        const inputImageFile = document.getElementById("image-file");
         const inputImageUrl = document.getElementById("image_url");
         const inputDescription = document.getElementById("description");
+
+        // Ubah File yang dipilih menjadi Base64 string agar bisa masuk ke JSON GitHub
+        inputImageFile.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    inputImageUrl.value = uploadEvent.target.result; // Simpan string base64
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
         function updatePreview() {
             const name = inputName.value || "Nama Sneakers";
@@ -275,11 +290,11 @@
             }
 
             document.getElementById("calc-orig").textContent = `Rp ${price.toLocaleString()}`;
-            document.getElementById("calc-disc").textContent = `- Rp ${discAmount.toLocaleString()}`;
+            document.getElementById("calc-disc`").textContent = `- Rp ${discAmount.toLocaleString()}`;
             document.getElementById("calc-total").textContent = `Rp ${finalPrice.toLocaleString()}`;
         }
 
-        [inputName, inputCondition, inputPrice, inputDiscount, inputSizes, inputImageUrl, inputDescription].forEach(el => {
+        [inputName, inputCondition, inputPrice, inputDiscount, inputSizes, inputDescription].forEach(el => {
             el.addEventListener("input", updatePreview);
             el.addEventListener("change", updatePreview);
         });
@@ -334,6 +349,11 @@
             const msg = document.getElementById("status-msg");
             const editId = document.getElementById("edit-id").value;
 
+            if (!inputImageUrl.value) {
+                alert("Silakan pilih foto produk terlebih dahulu!");
+                return;
+            }
+
             const productData = {
                 id: editId ? parseInt(editId) : null,
                 name: inputName.value,
@@ -345,7 +365,7 @@
                 description: inputDescription.value
             };
 
-            msg.textContent = "Menyimpan data ke GitHub...";
+            msg.textContent = "Mengunggah file dan menyimpan ke GitHub...";
             msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
 
             try {
@@ -356,11 +376,12 @@
                 });
                 
                 if (res.ok) {
-                    msg.textContent = editId ? "Produk berhasil diperbarui di GitHub!" : "Produk berhasil di-upload dan tersimpan di GitHub!";
+                    msg.textContent = "Produk dan foto berhasil disimpan ke GitHub!";
                     msg.className = "text-center text-xs mt-3 font-medium text-green-600";
                     
                     document.getElementById("product-form").reset();
                     document.getElementById("edit-id").value = "";
+                    document.getElementById("image_url").value = "";
                     document.getElementById("submit-btn").textContent = "Upload ke Website";
                     updatePreview();
                     loadStockProducts();
@@ -368,7 +389,7 @@
                     throw new Error("Gagal menyimpan ke server");
                 }
             } catch (err) {
-                msg.textContent = "Terjadi kesalahan saat menyimpan data.";
+                msg.textContent = "Terjadi kesalahan saat meng-upload data.";
                 msg.className = "text-center text-xs mt-3 font-medium text-red-600";
             }
 
@@ -385,13 +406,16 @@
             inputImageUrl.value = p.image_url;
             inputDescription.value = p.description;
 
+            // Tampilkan foto lama di preview
+            document.getElementById("prev-img").src = p.image_url;
+
             updatePreview();
             document.getElementById("submit-btn").textContent = "Simpan Perubahan";
             switchTab('upload');
         }
 
         async function deleteProduct(id) {
-            if (confirm("Apakah barang ini sudah habis dan ingin dihapus permanen dari GitHub?")) {
+            if (confirm("Apakah barang ini ingin dihapus permanen dari GitHub?")) {
                 try {
                     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
                     loadStockProducts();
