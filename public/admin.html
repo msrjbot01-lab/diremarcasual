@@ -174,8 +174,8 @@
 
                 <form id="banner-form" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Nama Banner</label>
-                        <input type="text" id="banner-name" placeholder="Contoh: Banner Promo Lebaran 2026" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <label class="block text-xs font-semibold uppercase mb-1">Nama Banner / Keterangan</label>
+                        <input type="text" id="banner-name" placeholder="Contoh: Special Sneaker Drop Bulan Ini" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                     </div>
 
                     <div>
@@ -227,10 +227,7 @@
     </div>
 
     <script>
-        // ⚠️ UBAH URL DI BAWAH INI DENGAN URL CLOUDFLARE WORKER MILIKMU SENDIRI
         const API_URL = "https://round-surf-5635.trbmaster.workers.dev/api/products";
-        const API_BANNER_URL = "https://round-surf-5635.trbmaster.workers.dev/api/banners"; // Endpoint opsional jika worker Anda mendukung banner
-
         const ADMIN_USER = "marie";
         const ADMIN_PASS = "diremar2026";
 
@@ -278,12 +275,10 @@
             const btnStock = document.getElementById("tab-stock-btn");
             const btnBanner = document.getElementById("tab-banner-btn");
 
-            // Sembunyikan semua tab
             tabUpload.classList.add("hidden");
             tabStock.classList.add("hidden");
             tabBanner.classList.add("hidden");
             
-            // Reset style tombol
             btnUpload.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap";
             btnStock.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap";
             btnBanner.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap";
@@ -311,7 +306,6 @@
         const inputImageUrl = document.getElementById("image_url");
         const inputDescription = document.getElementById("description");
 
-        // Kompres Gambar Produk Otomatis sebelum dijadikan Base64
         inputImageFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -528,7 +522,6 @@
         const bannerFileInput = document.getElementById("banner-file");
         const bannerImageUrlInput = document.getElementById("banner-image-url");
 
-        // Kompres Banner Otomatis (Menyesuaikan rasio 1200x400)
         bannerFileInput.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -543,16 +536,13 @@
                     let width = img.width;
                     let height = img.height;
 
-                    // Resize proporsional
                     canvas.width = MAX_WIDTH;
                     canvas.height = MAX_HEIGHT;
                     const ctx = canvas.getContext("2d");
                     
-                    // Fill background putih jika gambar tidak pas rasio 3:1
                     ctx.fillStyle = "#FFFFFF";
                     ctx.fillRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
 
-                    // Hitung skala center crop / fit
                     let hRatio = MAX_WIDTH / width;
                     let vRatio = MAX_HEIGHT / height;
                     let ratio = Math.max(hRatio, vRatio);
@@ -569,10 +559,22 @@
             reader.readAsDataURL(file);
         });
 
-        // Simulasi / Koneksi Data Banner (Menyimpan ke localStorage / API Worker jika ada)
         function getBannersLocal() {
             try {
-                return JSON.parse(localStorage.getItem("diremar_banners")) || [];
+                let banners = JSON.parse(localStorage.getItem("diremar_banners"));
+                // Jika localStorage kosong, otomatis masukkan banner default yang sedang tampil di halaman utama
+                if (!banners) {
+                    banners = [
+                        {
+                            id: 1710000000001,
+                            name: "Special Sneaker Drop Bulan Ini",
+                            image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff", // Ganti URL ini jika menggunakan gambar lokal Anda sendiri
+                            status: "active"
+                        }
+                    ];
+                    localStorage.setItem("diremar_banners", JSON.stringify(banners));
+                }
+                return banners;
             } catch(e) {
                 return [];
             }
@@ -594,10 +596,6 @@
 
             tbody.innerHTML = "";
             banners.forEach((b, index) => {
-                let statusBadge = b.status === "active" 
-                    ? `<span class="px-2.5 py-1 rounded text-[10px] font-bold bg-green-100 text-green-800 uppercase">Aktif</span>` 
-                    : `<span class="px-2.5 py-1 rounded text-[10px] font-bold bg-gray-100 text-gray-600 uppercase">Nonaktif</span>`;
-
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 w-36">
