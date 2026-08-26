@@ -47,46 +47,24 @@
                 </p>
             </div>
 
-            <!-- BANNER SLIDE CONTAINER (Bisa diatur via Admin Panel) -->
+            <!-- BANNER SLIDE CONTAINER (Dinamis dari Admin Panel / localStorage) -->
             <div class="max-w-5xl mx-auto relative rounded-3xl overflow-hidden shadow-2xl border border-gray-800 bg-[#141416] group">
                 <!-- Wrapper Slides -->
                 <div id="bannerSlider" class="relative w-full h-56 sm:h-80 md:h-96 flex transition-transform duration-700 ease-in-out">
-                    <!-- Slide 1 -->
-                    <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1200&q=80" alt="Banner 1" class="w-full h-full object-cover brightness-75">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 sm:p-10 text-left">
-                            <div>
-                                <span class="bg-amber-500 text-black text-[10px] font-bold px-2.5 py-1 rounded uppercase">Featured</span>
-                                <h2 class="text-lg sm:text-2xl font-bold text-white mt-1">Special Sneaker Drop Bulan Ini</h2>
-                                <p class="text-xs text-gray-300 mt-1">Dapatkan penawaran diskon khusus untuk pembelian preloved pilihan.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Slide 2 -->
-                    <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=1200&q=80" alt="Banner 2" class="w-full h-full object-cover brightness-75">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 sm:p-10 text-left">
-                            <div>
-                                <span class="bg-blue-500 text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase">Original 100%</span>
-                                <h2 class="text-lg sm:text-2xl font-bold text-white mt-1">Authentic Collection</h2>
-                                <p class="text-xs text-gray-300 mt-1">Garansi keaslian terjamin untuk setiap koleksi street style Anda.</p>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Slide dimuat otomatis oleh JavaScript -->
                 </div>
 
                 <!-- Tombol Navigasi Slider (Prev / Next) -->
-                <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2.5 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100">
+                <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2.5 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100 z-20">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
-                <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2.5 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100">
+                <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2.5 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100 z-20">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
                 <!-- Indikator Dots -->
-                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10" id="sliderDots">
-                    <button onclick="currentSlide(0)" class="w-2.5 h-2.5 rounded-full bg-white transition"></button>
-                    <button onclick="currentSlide(1)" class="w-2.5 h-2.5 rounded-full bg-white/50 transition"></button>
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20" id="sliderDots">
+                    <!-- Dots dimuat otomatis oleh JavaScript -->
                 </div>
             </div>
         </section>
@@ -166,36 +144,110 @@
         const API_URL = "https://round-surf-5635.trbmaster.workers.dev/api/products";
         let allProducts = [];
 
-        // Slider Logic
+        // Slider Logic Dinamis
         let currentSlideIndex = 0;
-        const totalSlides = 2;
+        let activeBanners = [];
+        let slideInterval;
+
+        function initDynamicBanners() {
+            try {
+                const storedBanners = JSON.parse(localStorage.getItem("diremar_banners")) || [];
+                // Ambil hanya banner dengan status 'active'
+                activeBanners = storedBanners.filter(b => b.status === 'active');
+            } catch (e) {
+                console.error("Gagal membaca banner dari localStorage:", e);
+                activeBanners = [];
+            }
+
+            const slider = document.getElementById('bannerSlider');
+            const dotsContainer = document.getElementById('sliderDots');
+
+            // Fallback jika belum ada banner di localStorage / kosong
+            if (activeBanners.length === 0) {
+                activeBanners = [
+                    {
+                        name: "Special Sneaker Drop Bulan Ini",
+                        subtitle: "Featured",
+                        description: "Dapatkan penawaran diskon khusus untuk pembelian preloved pilihan.",
+                        desktop_url: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1200&q=80",
+                        mobile_url: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=600&q=80"
+                    },
+                    {
+                        name: "Authentic Collection",
+                        subtitle: "Original 100%",
+                        description: "Garansi keaslian terjamin untuk setiap koleksi street style Anda.",
+                        desktop_url: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=1200&q=80",
+                        mobile_url: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=600&q=80"
+                    }
+                ];
+            }
+
+            const isMobile = window.innerWidth <= 768;
+
+            let slidesHtml = '';
+            let dotsHtml = '';
+
+            activeBanners.forEach((banner, idx) => {
+                const imageUrl = isMobile ? (banner.mobile_url || banner.desktop_url) : banner.desktop_url;
+                
+                slidesHtml += `
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        <img src="${imageUrl}" alt="${banner.name || 'Banner'}" class="w-full h-full object-cover brightness-75">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 sm:p-10 text-left">
+                            <div>
+                                ${banner.subtitle ? `<span class="bg-amber-500 text-black text-[10px] font-bold px-2.5 py-1 rounded uppercase">${banner.subtitle}</span>` : ''}
+                                <h2 class="text-lg sm:text-2xl font-bold text-white mt-1">${banner.name || ''}</h2>
+                                ${banner.description ? `<p class="text-xs text-gray-300 mt-1">${banner.description}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                dotsHtml += `
+                    <button onclick="currentSlide(${idx})" class="w-2.5 h-2.5 rounded-full ${idx === currentSlideIndex ? 'bg-white' : 'bg-white/50'} transition"></button>
+                `;
+            });
+
+            slider.innerHTML = slidesHtml;
+            dotsContainer.innerHTML = dotsHtml;
+            
+            // Reset interval auto slide
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
 
         function updateSlider() {
             const slider = document.getElementById('bannerSlider');
+            if (!slider || activeBanners.length === 0) return;
+
             slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
             
             const dots = document.getElementById('sliderDots').children;
             for (let i = 0; i < dots.length; i++) {
-                dots[i].className = i === currentSlideIndex ? "w-2.5 h-2.5 rounded-full bg-white transition" : "w-2.5 h-2.5 rounded-full bg-white/50 transition";
+                dots[i].className = i === currentSlideIndex 
+                    ? "w-2.5 h-2.5 rounded-full bg-white transition" 
+                    : "w-2.5 h-2.5 rounded-full bg-white/50 transition";
             }
         }
 
         function nextSlide() {
-            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+            if (activeBanners.length === 0) return;
+            currentSlideIndex = (currentSlideIndex + 1) % activeBanners.length;
             updateSlider();
         }
 
         function prevSlide() {
-            currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+            if (activeBanners.length === 0) return;
+            currentSlideIndex = (currentSlideIndex - 1 + activeBanners.length) % activeBanners.length;
             updateSlider();
         }
 
         function currentSlide(index) {
             currentSlideIndex = index;
             updateSlider();
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
         }
-
-        setInterval(nextSlide, 5000);
 
         async function fetchProducts() {
             try {
@@ -314,7 +366,11 @@
             if (e.target.id === 'productModal') closeModal();
         });
 
-        fetchProducts();
+        // Inisialisasi saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            initDynamicBanners();
+            fetchProducts();
+        });
     </script>
 </body>
 </html>
