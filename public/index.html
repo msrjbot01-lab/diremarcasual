@@ -200,15 +200,11 @@
                 activeBanners = [
                     {
                         name: "Special Sneaker Drop Bulan Ini",
-                        subtitle: "Featured",
-                        description: "Dapatkan penawaran diskon khusus untuk pembelian preloved pilihan.",
                         desktop_url: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1200&q=80",
                         mobile_url: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=600&q=80"
                     },
                     {
                         name: "Authentic Collection",
-                        subtitle: "Original 100%",
-                        description: "Garansi keaslian terjamin untuk setiap koleksi street style Anda.",
                         desktop_url: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=1200&q=80",
                         mobile_url: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=600&q=80"
                     }
@@ -222,16 +218,10 @@
             activeBanners.forEach((banner, idx) => {
                 const imageUrl = isMobile ? (banner.mobile_url || banner.desktop_url) : banner.desktop_url;
                 
+                // Bagian teks/caption di dalam banner telah dihapus, murni hanya menampilkan gambar penuh
                 slidesHtml += `
                     <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="${imageUrl}" alt="${banner.name || 'Banner'}" class="w-full h-full object-cover brightness-75">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 sm:p-10 text-left">
-                            <div>
-                                ${banner.subtitle ? `<span class="bg-gray-200 text-black text-[10px] font-bold px-2.5 py-1 rounded uppercase">${banner.subtitle}</span>` : ''}
-                                <h2 class="text-lg sm:text-2xl font-bold text-white mt-1">${banner.name || ''}</h2>
-                                ${banner.description ? `<p class="text-xs text-gray-300 mt-1">${banner.description}</p>` : ''}
-                            </div>
-                        </div>
+                        <img src="${imageUrl}" alt="${banner.name || 'Banner'}" class="w-full h-full object-cover">
                     </div>
                 `;
 
