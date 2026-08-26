@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Diremar Casual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-950 font-sans flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg border border-gray-200">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Master Control Admin</h2>
+            <a href="index.html" class="text-sm text-blue-600 hover:underline font-medium">&larr; Lihat Toko</a>
+        </div>
+
+        <form id="admin-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold mb-1">Nama Sneakers</label>
+                <input type="text" id="name" placeholder="Contoh: Nike Air Force 1 Casual" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Harga (Rp)</label>
+                    <input type="number" id="price" placeholder="450000" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Diskon (%) - Opsional</label>
+                    <input type="number" id="discount" value="0" min="0" max="100" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1">Link Gambar (URL)</label>
+                <input type="url" id="image_url" placeholder="https://images.unsplash.com/photo-..." required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                <p class="text-xs text-gray-500 mt-1">Tips: Kamu bisa pakai link gambar dari Google atau Unsplash untuk uji coba.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1">Deskripsi / Ukuran</label>
+                <textarea id="description" rows="3" placeholder="Ready Size 40-44, Include Box" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm">Simpan Produk</button>
+        </form>
+        
+        <p id="status-msg" class="text-center text-sm mt-4 font-medium"></p>
+    </div>
+
+    <script>
+        document.getElementById("admin-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const msg = document.getElementById("status-msg");
+            msg.textContent = "Simulasi: Tampilan form berfungsi dengan baik! (Backend Cloudflare belum diaktifkan)";
+            msg.className = "text-center text-sm mt-4 font-medium text-green-600";
+        });
+    </script>
+
+</body>
+</html>
