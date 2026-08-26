@@ -3,18 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Diremar Casual</title>
+    <title>Admin Login - Diremar Casual</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-950 font-sans flex items-center justify-center min-h-screen p-4">
 
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg border border-gray-200">
+    <!-- KOTAK LOGIN -->
+    <div id="login-section" class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
+        <h2 class="text-2xl font-bold mb-2 text-center">Admin Restricted</h2>
+        <p class="text-xs text-gray-500 text-center mb-6">Masukkan kredensial master untuk mengontrol website.</p>
+        
+        <form id="login-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold mb-1">Username</label>
+                <input type="text" id="username" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">Password</label>
+                <input type="password" id="password" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+            </div>
+            <button type="submit" class="w-full bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm">Login</button>
+        </form>
+        <p id="login-msg" class="text-center text-xs mt-3 font-medium text-red-500"></p>
+        <div class="text-center mt-6">
+            <a href="index.html" class="text-xs text-blue-600 hover:underline">&larr; Kembali ke Beranda Toko</a>
+        </div>
+    </div>
+
+    <!-- KOTAK PANEL UPLOAD PRODUK (TERSEMBUNYI SEBELUM LOGIN) -->
+    <div id="dashboard-section" class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg border border-gray-200 hidden">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Master Control Admin</h2>
-            <a href="index.html" class="text-sm text-blue-600 hover:underline font-medium">&larr; Lihat Toko</a>
+            <h2 class="text-2xl font-bold">Master Control Upload</h2>
+            <button onclick="logout()" class="text-xs bg-red-100 text-red-600 px-3 py-1.5 rounded font-semibold hover:bg-red-200 transition">Logout</button>
         </div>
 
-        <form id="admin-form" class="space-y-4">
+        <form id="product-form" class="space-y-4">
             <div>
                 <label class="block text-sm font-semibold mb-1">Nama Sneakers</label>
                 <input type="text" id="name" placeholder="Contoh: Nike Air Force 1 Casual" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
@@ -34,7 +57,6 @@
             <div>
                 <label class="block text-sm font-semibold mb-1">Link Gambar (URL)</label>
                 <input type="url" id="image_url" placeholder="https://images.unsplash.com/photo-..." required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
-                <p class="text-xs text-gray-500 mt-1">Tips: Kamu bisa pakai link gambar dari Google atau Unsplash untuk uji coba.</p>
             </div>
 
             <div>
@@ -42,17 +64,49 @@
                 <textarea id="description" rows="3" placeholder="Ready Size 40-44, Include Box" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
             </div>
 
-            <button type="submit" class="w-full bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm">Simpan Produk</button>
+            <button type="submit" class="w-full bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm">Upload Produk ke Toko</button>
         </form>
-        
         <p id="status-msg" class="text-center text-sm mt-4 font-medium"></p>
     </div>
 
     <script>
-        document.getElementById("admin-form").addEventListener("submit", (e) => {
+        // ATUR USERNAME DAN PASSWORD ADMIN DI SINI
+        const ADMIN_USER = "marie";
+        const ADMIN_PASS = "diremar2026"; // Kamu bisa ganti passwordnya
+
+        const loginSection = document.getElementById("login-section");
+        const dashboardSection = document.getElementById("dashboard-section");
+
+        // Cek apakah sudah login sebelumnya di browser ini
+        if (sessionStorage.getItem("isLoggedIn") === "true") {
+            loginSection.classList.add("hidden");
+            dashboardSection.classList.remove("hidden");
+        }
+
+        document.getElementById("login-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const u = document.getElementById("username").value;
+            const p = document.getElementById("password").value;
+            const msg = document.getElementById("login-msg");
+
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                sessionStorage.setItem("isLoggedIn", "true");
+                loginSection.classList.add("hidden");
+                dashboardSection.classList.remove("hidden");
+            } else {
+                msg.textContent = "Username atau Password salah!";
+            }
+        });
+
+        function logout() {
+            sessionStorage.removeItem("isLoggedIn");
+            location.reload();
+        }
+
+        document.getElementById("product-form").addEventListener("submit", (e) => {
             e.preventDefault();
             const msg = document.getElementById("status-msg");
-            msg.textContent = "Simulasi: Tampilan form berfungsi dengan baik! (Backend Cloudflare belum diaktifkan)";
+            msg.textContent = "Simulasi berhasil! Halaman admin sudah siap terhubung ke backend nanti.";
             msg.className = "text-center text-sm mt-4 font-medium text-green-600";
         });
     </script>
