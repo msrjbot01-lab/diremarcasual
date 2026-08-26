@@ -13,6 +13,7 @@
         <h1 class="font-bold text-lg tracking-wider">DIREMAR CASUAL // MASTER CONTROL</h1>
         <div class="flex items-center gap-4">
             <a href="index.html" target="_blank" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded transition">Lihat Toko</a>
+            <!-- Tombol Logout tersembunyi secara default sebelum login -->
             <button id="logout-btn" onclick="logout()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded transition font-semibold hidden">Logout</button>
         </div>
     </header>
@@ -47,10 +48,10 @@
             <button onclick="switchTab('stock')" id="tab-stock-btn" class="py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition">Menu Stok & Inventaris (<span id="stock-count">0</span>)</button>
         </div>
 
-        <!-- MENU 1: TAMBAH BARANG & PREVIEW -->
+        <!-- MENU 1: TAMBAH BARANG & LIVE PREVIEW -->
         <div id="tab-upload" class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start max-w-5xl mx-auto">
             
-            <!-- Kolom Kiri: Form Input -->
+            <!-- Form Input -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold mb-6">Form Upload Produk Sneakers</h2>
                 
@@ -101,11 +102,10 @@
                 <p id="status-msg" class="text-center text-xs mt-3 font-medium"></p>
             </div>
 
-            <!-- Kolom Kanan: Live Preview Tampilan Kartu Produk -->
+            <!-- Live Preview -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 sticky top-6">
                 <h2 class="text-sm font-bold uppercase text-gray-400 mb-4 tracking-wider">Live Preview di Website</h2>
                 
-                <!-- Kotak Kartu Produk -->
                 <div class="border rounded-xl overflow-hidden shadow-sm bg-white relative">
                     <span id="prev-badge" class="absolute top-3 left-3 bg-black text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10">New</span>
                     
@@ -131,20 +131,11 @@
                     </div>
                 </div>
 
-                <!-- Kalkulator Total Ringkas -->
+                <!-- Kalkulator Diskon Ringkas -->
                 <div class="mt-4 p-3 bg-zinc-50 border rounded-lg text-xs space-y-1">
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Harga Asli:</span>
-                        <span id="calc-orig" class="font-semibold">Rp 0</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Potongan Diskon:</span>
-                        <span id="calc-disc" class="font-semibold text-red-600">Rp 0</span>
-                    </div>
-                    <div class="border-t pt-1 flex justify-between font-bold text-sm">
-                        <span>Total Harga Bersih:</span>
-                        <span id="calc-total" class="text-green-600">Rp 0</span>
-                    </div>
+                    <div class="flex justify-between"><span class="text-gray-500">Harga Asli:</span><span id="calc-orig" class="font-semibold">Rp 0</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Potongan Diskon:</span><span id="calc-disc" class="font-semibold text-red-600">Rp 0</span></div>
+                    <div class="border-t pt-1 flex justify-between font-bold text-sm"><span>Total Harga Bersih:</span><span id="calc-total" class="text-green-600">Rp 0</span></div>
                 </div>
             </div>
 
@@ -152,12 +143,8 @@
 
         <!-- MENU 2: STOK & INVENTARIS BARANG -->
         <div id="tab-stock" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 hidden">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h2 class="text-xl font-bold">Menu Stok & Master Inventaris</h2>
-                    <p class="text-xs text-gray-500">Kelola seluruh barang yang aktif di website. Hapus jika sudah habis atau edit jika ada perubahan harga/keterangan.</p>
-                </div>
-            </div>
+            <h2 class="text-xl font-bold mb-1">Menu Stok & Master Inventaris</h2>
+            <p class="text-xs text-gray-500 mb-6">Kelola seluruh barang yang tersimpan di GitHub repository.</p>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
@@ -167,13 +154,11 @@
                             <th class="p-3">Kondisi</th>
                             <th class="p-3">Harga & Diskon</th>
                             <th class="p-3">Size</th>
-                            <th class="p-3 text-center">Aksi (Edit / Hapus)</th>
+                            <th class="p-3 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="stock-product-list">
-                        <tr>
-                            <td colspan="5" class="p-6 text-center text-gray-400">Belum ada barang di menu stok.</td>
-                        </tr>
+                        <tr><td colspan="5" class="p-6 text-center text-gray-400">Memuat data dari GitHub...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -182,6 +167,9 @@
     </div>
 
     <script>
+        // ⚠️ UBAH URL DI BAWAH INI DENGAN URL CLOUDFLARE WORKER MILIKMU SENDIRI
+        const API_URL = "https://diremar-api.namakamu.workers.dev/api/products";
+
         const ADMIN_USER = "marie";
         const ADMIN_PASS = "diremar2026";
 
@@ -238,7 +226,7 @@
             }
         }
 
-        // Live Preview Real-time Listener
+        // Live Preview Logic
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
         const inputPrice = document.getElementById("price");
@@ -254,9 +242,8 @@
             const discount = parseFloat(inputDiscount.value) || 0;
             const sizes = inputSizes.value || "-";
             const imageUrl = inputImageUrl.value || "https://images.unsplash.com/photo-1542291026-7eec264c27ff";
-            const description = inputDescription.value || "Deskripsi produk akan muncul di sini...";
+            const description = inputDescription.value || "Deskripsi produk...";
 
-            // Hitung diskon
             let finalPrice = price;
             let discAmount = 0;
             if (discount > 0 && price > 0) {
@@ -264,7 +251,6 @@
                 finalPrice = price - discAmount;
             }
 
-            // Update Teks Preview Kartu
             document.getElementById("prev-name").textContent = name;
             document.getElementById("prev-desc").textContent = description;
             document.getElementById("prev-sizes").textContent = sizes;
@@ -276,10 +262,9 @@
                 ? "absolute top-3 left-3 bg-black text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10" 
                 : "absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10";
 
-            // Harga
             if (discount > 0) {
                 document.getElementById("prev-final-price").textContent = `Rp ${finalPrice.toLocaleString()}`;
-                document.getElementById("prev-original-price.textContent").textContent = `Rp ${price.toLocaleString()}`;
+                document.getElementById("prev-original-price").textContent = `Rp ${price.toLocaleString()}`;
                 document.getElementById("prev-original-price").classList.remove("hidden");
                 document.getElementById("prev-discount-badge").classList.remove("hidden");
                 document.getElementById("prev-disc-val").textContent = discount;
@@ -289,35 +274,68 @@
                 document.getElementById("prev-discount-badge").classList.add("hidden");
             }
 
-            // Kalkulator Ringkas
             document.getElementById("calc-orig").textContent = `Rp ${price.toLocaleString()}`;
             document.getElementById("calc-disc").textContent = `- Rp ${discAmount.toLocaleString()}`;
             document.getElementById("calc-total").textContent = `Rp ${finalPrice.toLocaleString()}`;
         }
 
-        // Pasang event listener ke semua input form
         [inputName, inputCondition, inputPrice, inputDiscount, inputSizes, inputImageUrl, inputDescription].forEach(el => {
             el.addEventListener("input", updatePreview);
             el.addEventListener("change", updatePreview);
         });
 
-        // Penyimpanan Lokal
-        function getLocalProducts() {
-            return JSON.parse(localStorage.getItem("diremar_products")) || [];
+        // Load Products dari GitHub lewat Worker
+        async function loadStockProducts() {
+            try {
+                const response = await fetch(API_URL);
+                const products = await response.json();
+                const tbody = document.getElementById("stock-product-list");
+                document.getElementById("stock-count").textContent = products.length || 0;
+
+                if (!products || products.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada barang di menu stok.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                products.forEach(p => {
+                    let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-100 text-amber-800";
+                    let finalPrice = p.price - ((p.price * p.discount) / 100);
+                    tbody.innerHTML += `
+                        <tr class="border-b hover:bg-gray-50 transition">
+                            <td class="p-3 flex items-center gap-3">
+                                <img src="${p.image_url}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
+                                <div>
+                                    <p class="font-bold text-gray-900">${p.name}</p>
+                                    <p class="text-xs text-gray-500 line-clamp-1">${p.description || '-'}</p>
+                                </div>
+                            </td>
+                            <td class="p-3"><span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${p.condition}</span></td>
+                            <td class="p-3">
+                                <p class="font-bold">Rp ${finalPrice.toLocaleString()}</p>
+                                ${p.discount > 0 ? `<span class="text-xs text-gray-400 line-through">Rp ${p.price.toLocaleString()}</span> <span class="text-xs text-red-600 font-semibold">(${p.discount}%)</span>` : ''}
+                            </td>
+                            <td class="p-3 text-xs font-semibold text-gray-700">Size: ${p.sizes}</td>
+                            <td class="p-3 text-center space-x-2">
+                                <button onclick='editProduct(${JSON.stringify(p)})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
+                                <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Gagal memuat produk:", err);
+            }
         }
 
-        function saveLocalProducts(products) {
-            localStorage.setItem("diremar_products", JSON.stringify(products));
-        }
-
-        // Handle Form Submit
-        document.getElementById("product-form").addEventListener("submit", (e) => {
+        // Submit Form (Tambah/Edit)
+        document.getElementById("product-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const msg = document.getElementById("status-msg");
             const editId = document.getElementById("edit-id").value;
 
             const productData = {
-                id: editId ? parseInt(editId) : Date.now(),
+                id: editId ? parseInt(editId) : null,
                 name: inputName.value,
                 condition: inputCondition.value,
                 price: parseFloat(inputPrice.value),
@@ -327,76 +345,37 @@
                 description: inputDescription.value
             };
 
-            let products = getLocalProducts();
+            msg.textContent = "Menyimpan data ke GitHub...";
+            msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
 
-            if (editId) {
-                products = products.map(p => p.id === parseInt(editId) ? productData : p);
-                document.getElementById("edit-id").value = "";
-                document.getElementById("submit-btn").textContent = "Upload ke Website";
-                msg.textContent = "Produk berhasil diperbarui!";
-            } else {
-                products.unshift(productData);
-                msg.textContent = "Produk berhasil di-upload dan langsung tayang di website!";
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(productData)
+                });
+                
+                if (res.ok) {
+                    msg.textContent = editId ? "Produk berhasil diperbarui di GitHub!" : "Produk berhasil di-upload dan tersimpan di GitHub!";
+                    msg.className = "text-center text-xs mt-3 font-medium text-green-600";
+                    
+                    document.getElementById("product-form").reset();
+                    document.getElementById("edit-id").value = "";
+                    document.getElementById("submit-btn").textContent = "Upload ke Website";
+                    updatePreview();
+                    loadStockProducts();
+                } else {
+                    throw new Error("Gagal menyimpan ke server");
+                }
+            } catch (err) {
+                msg.textContent = "Terjadi kesalahan saat menyimpan data.";
+                msg.className = "text-center text-xs mt-3 font-medium text-red-600";
             }
-
-            saveLocalProducts(products);
-            msg.className = "text-center text-xs mt-3 font-medium text-green-600";
-            
-            document.getElementById("product-form").reset();
-            updatePreview(); // Reset preview
-            loadStockProducts();
 
             setTimeout(() => { msg.textContent = ""; }, 3000);
         });
 
-        // Muat Data ke Menu Stok
-        function loadStockProducts() {
-            const products = getLocalProducts();
-            const tbody = document.getElementById("stock-product-list");
-            document.getElementById("stock-count").textContent = products.length;
-
-            if (products.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada barang di menu stok.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = "";
-            products.forEach(p => {
-                let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-100 text-amber-800";
-                let finalPrice = p.price - ((p.price * p.discount) / 100);
-                tbody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="p-3 flex items-center gap-3">
-                            <img src="${p.image_url}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
-                            <div>
-                                <p class="font-bold text-gray-900">${p.name}</p>
-                                <p class="text-xs text-gray-500 line-clamp-1">${p.description || '-'}</p>
-                            </div>
-                        </td>
-                        <td class="p-3">
-                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${p.condition}</span>
-                        </td>
-                        <td class="p-3">
-                            <p class="font-bold">Rp ${finalPrice.toLocaleString()}</p>
-                            ${p.discount > 0 ? `<span class="text-xs text-gray-400 line-through">Rp ${p.price.toLocaleString()}</span> <span class="text-xs text-red-600 font-semibold">(${p.discount}%)</span>` : ''}
-                        </td>
-                        <td class="p-3 text-xs font-semibold text-gray-700">
-                            Size: ${p.sizes}
-                        </td>
-                        <td class="p-3 text-center space-x-2">
-                            <button onclick="editProduct(${p.id})" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
-                            <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function editProduct(id) {
-            const products = getLocalProducts();
-            const p = products.find(item => item.id === id);
-            if (!p) return;
-
+        function editProduct(p) {
             document.getElementById("edit-id").value = p.id;
             inputName.value = p.name;
             inputCondition.value = p.condition;
@@ -411,12 +390,14 @@
             switchTab('upload');
         }
 
-        function deleteProduct(id) {
-            if (confirm("Apakah barang ini sudah habis dan ingin dihapus permanen dari toko?")) {
-                let products = getLocalProducts();
-                products = products.filter(p => p.id !== id);
-                saveLocalProducts(products);
-                loadStockProducts();
+        async function deleteProduct(id) {
+            if (confirm("Apakah barang ini sudah habis dan ingin dihapus permanen dari GitHub?")) {
+                try {
+                    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                    loadStockProducts();
+                } catch (err) {
+                    alert("Gagal menghapus produk.");
+                }
             }
         }
     </script>
