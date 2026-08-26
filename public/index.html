@@ -67,9 +67,9 @@
 
     <!-- HERO & BANNER SLIDER -->
     <div class="bg-hero-pattern border-b border-gray-800/80 text-white relative w-full overflow-hidden">
-        <section class="py-6 sm:py-10 px-0 text-center w-full">
-            <div class="max-w-3xl mx-auto mb-4 sm:mb-6 px-4 animate-hero-title">
-                <h1 class="text-xl sm:text-3xl font-black tracking-tight mb-2 uppercase leading-snug animate-shimmer-silver">
+        <section class="py-5 sm:py-8 px-0 text-center w-full">
+            <div class="max-w-3xl mx-auto mb-3 sm:mb-5 px-4 animate-hero-title">
+                <h1 class="text-lg sm:text-3xl font-black tracking-tight mb-1.5 uppercase leading-snug animate-shimmer-silver">
                     LANGKAH PASTI, GAYA BERKELAS
                 </h1>
                 <p class="text-gray-400 text-xs sm:text-sm max-w-lg mx-auto font-normal leading-relaxed">
@@ -77,10 +77,10 @@
                 </p>
             </div>
 
-            <!-- BANNER CONTAINER: Melebar penuh, tapi dibatasi tinggi maksimumnya (max-h) agar tidak terlalu besar/tinggi di layar PC -->
-            <div class="w-full relative overflow-hidden shadow-2xl border-y border-gray-800 bg-[#141416] group max-h-[350px] sm:max-h-[420px]">
-                <div id="bannerSlider" class="relative w-full aspect-[3/1] max-h-[350px] sm:max-h-[420px] flex transition-transform duration-700 ease-in-out">
-                    <!-- Slide dimuat via JS -->
+            <!-- BANNER CONTAINER (Rasio 3:1 yang proporsional di HP & PC) -->
+            <div class="w-full relative overflow-hidden shadow-2xl border-y border-gray-800 bg-[#141416] group max-h-[180px] sm:max-h-[380px]">
+                <div id="bannerSlider" class="relative w-full aspect-[3/1] flex transition-transform duration-700 ease-in-out">
+                    <!-- Slide dimuat via API Database -->
                 </div>
 
                 <button onclick="prevSlide()" class="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2.5 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer">
@@ -90,7 +90,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
-                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-1.5 z-20" id="sliderDots"></div>
+                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1.5 z-20" id="sliderDots"></div>
             </div>
         </section>
     </div>
@@ -162,35 +162,41 @@
 
     <!-- SCRIPT -->
     <script>
-        const API_URL = "https://round-surf-5635.trbmaster.workers.dev/api/products";
+        const API_BASE = "https://round-surf-5635.trbmaster.workers.dev/api";
         let allProducts = [];
         let currentSlideIndex = 0;
         let activeBanners = [];
         let slideInterval;
 
-        function initDynamicBanners() {
+        // Mengambil data banner langsung dari Cloud API (bukan localStorage)
+        async function fetchBanners() {
             try {
-                const storedBanners = JSON.parse(localStorage.getItem("diremar_banners")) || [];
-                activeBanners = storedBanners.filter(b => b.status === 'active');
-            } catch (e) {
+                const response = await fetch(`${API_BASE}/banners`);
+                if (!response.ok) throw new Error("Gagal mengambil banner");
+                const data = await response.json();
+                
+                // Menyaring banner yang berstatus aktif
+                activeBanners = data.filter(b => b.status === 'active');
+            } catch (error) {
+                console.error("Gagal memuat banner dari server:", error);
                 activeBanners = [];
             }
 
+            // Fallback default jika database banner masih kosong
             if (activeBanners.length === 0) {
                 activeBanners = [
                     {
-                        name: "Special Sneaker Drop Bulan Ini",
-                        desktop_url: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1200&q=80",
-                        mobile_url: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1200&q=80"
-                    },
-                    {
-                        name: "Authentic Collection",
-                        desktop_url: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=1200&q=80",
-                        mobile_url: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=1200&q=80"
+                        name: "Special Sneaker Drop",
+                        desktop_url: "logo01.webp",
+                        mobile_url: "logo01.webp"
                     }
                 ];
             }
 
+            renderBanners();
+        }
+
+        function renderBanners() {
             const slider = document.getElementById('bannerSlider');
             const dotsContainer = document.getElementById('sliderDots');
             const isMobile = window.innerWidth <= 768;
@@ -216,7 +222,9 @@
             dotsContainer.innerHTML = dotsHtml;
             
             if (slideInterval) clearInterval(slideInterval);
-            slideInterval = setInterval(nextSlide, 5000);
+            if (activeBanners.length > 1) {
+                slideInterval = setInterval(nextSlide, 5000);
+            }
         }
 
         function updateSlider() {
@@ -254,8 +262,8 @@
 
         async function fetchProducts() {
             try {
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error("Gagal mengambil data");
+                const response = await fetch(`${API_BASE}/products`);
+                if (!response.ok) throw new Error("Gagal mengambil produk");
                 allProducts = await response.json();
                 renderProducts(allProducts);
             } catch (error) {
@@ -370,7 +378,7 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            initDynamicBanners();
+            fetchBanners();
             fetchProducts();
         });
     </script>
