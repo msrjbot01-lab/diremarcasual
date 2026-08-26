@@ -55,7 +55,7 @@
                 
                 <form id="product-form" class="space-y-4">
                     <input type="hidden" id="edit-id">
-                    <input type="hidden" id="image_url"> <!-- Menyimpan data string gambar -->
+                    <input type="hidden" id="image_url">
 
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Nama Sneakers</label>
@@ -87,11 +87,10 @@
                         </div>
                     </div>
 
-                    <!-- UPLOAD FILE DARI PENYAKITAN / GALERI -->
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Pilih Foto Produk dari Perangkat</label>
                         <input type="file" id="image-file" accept="image/*" class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
-                        <p class="text-[10px] text-gray-400 mt-1">Format yang didukung: JPG, PNG, WEBP.</p>
+                        <p class="text-[10px] text-gray-400 mt-1">Otomatis dikompres agar aman disimpan ke GitHub.</p>
                     </div>
 
                     <div>
@@ -169,9 +168,9 @@
 
     <script>
         // ⚠️ UBAH URL DI BAWAH INI DENGAN URL CLOUDFLARE WORKER MILIKMU SENDIRI
-        const API_URL = "https://diremar-api.namakamu.workers.dev/api/products";
+        const API_URL = "https://round-surf-5635.trbmaster.workers.dev/";
 
-        const ADMIN_USER = "admin";
+        const ADMIN_USER = "marie";
         const ADMIN_PASS = "diremar2026";
 
         const loginSection = document.getElementById("login-section");
@@ -227,7 +226,6 @@
             }
         }
 
-        // Live Preview & Image Converter Logic
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
         const inputPrice = document.getElementById("price");
@@ -237,17 +235,46 @@
         const inputImageUrl = document.getElementById("image_url");
         const inputDescription = document.getElementById("description");
 
-        // Ubah File yang dipilih menjadi Base64 string agar bisa masuk ke JSON GitHub
+        // Kompres Gambar Otomatis sebelum dijadikan Base64
         inputImageFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(uploadEvent) {
-                    inputImageUrl.value = uploadEvent.target.result; // Simpan string base64
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const MAX_WIDTH = 800; // Resolusi maksimal lebar gambar
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Kompres ke format JPEG dengan kualitas 0.7 (70%) agar file kecil & ringan
+                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+                    inputImageUrl.value = compressedDataUrl;
                     updatePreview();
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         });
 
         function updatePreview() {
@@ -290,7 +317,7 @@
             }
 
             document.getElementById("calc-orig").textContent = `Rp ${price.toLocaleString()}`;
-            document.getElementById("calc-disc`").textContent = `- Rp ${discAmount.toLocaleString()}`;
+            document.getElementById("calc-disc").textContent = `- Rp ${discAmount.toLocaleString()}`;
             document.getElementById("calc-total").textContent = `Rp ${finalPrice.toLocaleString()}`;
         }
 
@@ -299,7 +326,6 @@
             el.addEventListener("change", updatePreview);
         });
 
-        // Load Products dari GitHub lewat Worker
         async function loadStockProducts() {
             try {
                 const response = await fetch(API_URL);
@@ -343,7 +369,6 @@
             }
         }
 
-        // Submit Form (Tambah/Edit)
         document.getElementById("product-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const msg = document.getElementById("status-msg");
@@ -365,7 +390,7 @@
                 description: inputDescription.value
             };
 
-            msg.textContent = "Mengunggah file dan menyimpan ke GitHub...";
+            msg.textContent = "Mengunggah data & foto ke GitHub...";
             msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
 
             try {
@@ -406,7 +431,6 @@
             inputImageUrl.value = p.image_url;
             inputDescription.value = p.description;
 
-            // Tampilkan foto lama di preview
             document.getElementById("prev-img").src = p.image_url;
 
             updatePreview();
