@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diremar Casual — Official Store</title>
+
+    <!-- FAVICON & WEB LOGO -->
+    <link rel="icon" type="image/webp" href="favicon.webp">
+    <link rel="shortcut icon" href="favicon.webp" type="image/webp">
+    <link rel="apple-touch-icon" href="favicon.webp">
+
+    <!-- SEO & META TAGS -->
+    <meta name="description" content="Temukan koleksi sneakers original baru dan preloved pilihan terbaik di Diremar Casual. Langkah pasti, gaya berkelas.">
+    <meta property="og:title" content="Diremar Casual — Official Store">
+    <meta property="og:description" content="Koleksi sneakers original baru & preloved pilihan terbaik.">
+    <meta property="og:image" content="logo01.webp">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,9 +36,13 @@
         <!-- NAVBAR ATAS -->
         <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between border-b border-gray-800/60">
             <div class="flex items-center space-x-3">
-                <span class="text-lg sm:text-xl font-black tracking-widest text-white uppercase flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-amber-400"></span> DIREMAR CASUAL
-                </span>
+                <!-- LOGO WEBSITE (Menggunakan logo01.webp) -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <img src="logo01.webp" alt="Diremar Casual Logo" class="h-9 sm:h-10 w-auto object-contain">
+                    <span class="text-lg sm:text-xl font-black tracking-widest text-white uppercase hidden sm:inline">
+                        DIREMAR CASUAL
+                    </span>
+                </a>
             </div>
             
             <!-- SEARCH BAR -->
@@ -152,7 +168,6 @@
         function initDynamicBanners() {
             try {
                 const storedBanners = JSON.parse(localStorage.getItem("diremar_banners")) || [];
-                // Ambil hanya banner dengan status 'active'
                 activeBanners = storedBanners.filter(b => b.status === 'active');
             } catch (e) {
                 console.error("Gagal membaca banner dari localStorage:", e);
@@ -162,7 +177,6 @@
             const slider = document.getElementById('bannerSlider');
             const dotsContainer = document.getElementById('sliderDots');
 
-            // Fallback jika belum ada banner di localStorage / kosong
             if (activeBanners.length === 0) {
                 activeBanners = [
                     {
@@ -183,7 +197,6 @@
             }
 
             const isMobile = window.innerWidth <= 768;
-
             let slidesHtml = '';
             let dotsHtml = '';
 
@@ -211,7 +224,6 @@
             slider.innerHTML = slidesHtml;
             dotsContainer.innerHTML = dotsHtml;
             
-            // Reset interval auto slide
             if (slideInterval) clearInterval(slideInterval);
             slideInterval = setInterval(nextSlide, 5000);
         }
@@ -366,7 +378,6 @@
             if (e.target.id === 'productModal') closeModal();
         });
 
-        // Inisialisasi saat halaman dimuat
         window.addEventListener('DOMContentLoaded', () => {
             initDynamicBanners();
             fetchProducts();
