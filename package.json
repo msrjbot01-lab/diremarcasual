@@ -8,5 +8,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msrjbot01-lab/diremarcasual.git"
+  },
+  "bugs": {
+    "url": "https://github.com/msrjbot01-lab/diremarcasual/issues"
+  },
+  "homepage": "https://github.com/msrjbot01-lab/diremarcasual#readme",
   "description": ""
 }
