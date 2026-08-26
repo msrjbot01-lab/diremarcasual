@@ -61,11 +61,9 @@
 </head>
 <body class="min-h-screen flex flex-col bg-[#0d0d0f] text-gray-900 antialiased selection:bg-amber-500 selection:text-black">
 
-    <!-- BAGIAN ATAS (HEADER + HERO AREA DENGAN BACKGROUND BINTANG-BINTANG) -->
-    <div class="bg-hero-pattern border-b border-gray-800 text-white relative">
-        
-        <!-- NAVBAR ATAS -->
-        <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between border-b border-gray-800/60">
+    <!-- HEADER ATAS (HITAM POLOS SESUAI PERMINTAAN) -->
+    <header class="bg-[#0d0d0f] border-b border-gray-800 text-white relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <a href="#" class="flex items-center group">
                     <img src="logo01.webp" alt="Diremar Casual Logo" class="h-12 sm:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
@@ -77,9 +75,11 @@
                 <input type="text" id="searchInput" placeholder="Cari sneakers..." class="w-full bg-[#18181b]/90 border border-gray-700/80 rounded-full px-4 py-2 pl-9 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition shadow-lg">
                 <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- HERO SECTION & BANNER SLIDER -->
+    <!-- HERO SECTION & BANNER SLIDER (DENGAN BACKGROUND BINTANG-BINTANG) -->
+    <div class="bg-hero-pattern border-b border-gray-800 text-white relative">
         <section class="py-12 px-4 text-center">
             <div class="max-w-3xl mx-auto mb-8 animate-hero-title">
                 <h1 class="text-3xl sm:text-5xl font-black tracking-tight mb-3 uppercase leading-tight animate-shimmer-silver">
