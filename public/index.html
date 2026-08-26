@@ -3,37 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diremar Casual - Official Sneakers Store</title>
+    <title>Diremar Casual - Official Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
+<body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col">
 
-    <!-- Navbar (Tanpa Tombol Admin) -->
-    <header class="bg-black text-white sticky top-0 z-50 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-extrabold tracking-widest">DIREMAR CASUAL</h1>
-        </div>
+    <!-- Header Toko -->
+    <header class="bg-black text-white py-4 px-6 sticky top-0 z-50 shadow-md flex justify-between items-center">
+        <h1 class="font-black tracking-widest text-lg">DIREMAR CASUAL</h1>
+        <a href="admin.html" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded transition font-semibold">Admin Panel</a>
     </header>
 
-    <!-- Hero Section -->
-    <section class="bg-zinc-900 text-white py-16 px-4 text-center">
-        <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tight">Langkah Stylish Setiap Hari</h2>
-        <p class="text-gray-400 max-w-xl mx-auto text-sm md:text-base">Temukan koleksi sneakers casual terbaik, original, dan berkualitas tinggi hanya di Diremar Casual.</p>
+    <!-- Banner / Hero -->
+    <section class="bg-zinc-900 text-white py-12 px-6 text-center">
+        <h2 class="text-3xl font-extrabold uppercase tracking-tight mb-2">Koleksi Sneakers Pilihan</h2>
+        <p class="text-xs text-gray-400">Barang original, kondisi terbaik, siap kirim ke seluruh Indonesia.</p>
     </section>
 
     <!-- Katalog Produk -->
-    <main class="max-w-7xl mx-auto py-12 px-4">
-        <h3 class="text-2xl font-bold mb-8 border-b pb-2">Katalog Sneakers</h3>
-        
-        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <p class="text-gray-500 col-span-full text-center py-10">Belum ada produk tersedia.</p>
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8">
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Produk akan dimuat secara otomatis di sini -->
+            <div class="col-span-full text-center py-12 text-gray-400 text-sm">Memuat katalog produk...</div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-black text-white text-center py-6 mt-16 text-sm text-gray-400">
-        <p>&copy; 2026 Diremar Casual. All Rights Reserved.</p>
+    <footer class="bg-black text-white text-center py-6 text-xs text-gray-500 border-t border-zinc-800">
+        &copy; 2026 Diremar Casual. All Rights Reserved.
     </footer>
 
+    <script>
+        // GANTI URL DI BAWAH INI DENGAN URL CLOUDFLARE WORKER MILIKMU
+        const API_URL = "https://diremar-api.namakamu.workers.dev/api/products";
+
+        async function loadStoreProducts() {
+            const grid = document.getElementById("product-grid");
+            try {
+                const res = await fetch(API_URL);
+                const products = await res.json();
+
+                if (!products || products.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 text-sm">Belum ada produk yang tersedia saat ini.</div>`;
+                    return;
+                }
+
+                grid.innerHTML = "";
+                products.forEach(p => {
+                    let finalPrice = p.price - ((p.price * p.discount) / 100);
+                    let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-500 text-white";
+
+                    grid.innerHTML += `
+                        <div class="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col relative group">
+                            <span class="absolute top-3 left-3 ${badgeColor} text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10">${p.condition}</span>
+                            
+                            <div class="w-full h-60 bg-gray-100 overflow-hidden relative">
+                                <img src="${p.image_url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${p.name}">
+                                ${p.discount > 0 ? `<div class="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">-${p.discount}%</div>` : ''}
+                            </div>
+
+                            <div class="p-4 flex flex-col flex-grow justify-between space-y-3">
+                                <div>
+                                    <h3 class="font-bold text-base text-gray-900 truncate">${p.name}</h3>
+                                    <p class="text-xs text-gray-500 line-clamp-2 mt-1">${p.description || 'Tidak ada deskripsi.'}</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-baseline gap-2 mb-2">
+                                        <span class="text-base font-black text-gray-900">Rp ${finalPrice.toLocaleString()}</span>
+                                        ${p.discount > 0 ? `<span class="text-xs text-gray-400 line-through">Rp ${p.price.toLocaleString()}</span>` : ''}
+                                    </div>
+                                    
+                                    <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded mb-3">
+                                        Size: <span class="font-semibold text-gray-900">${p.sizes}</span>
+                                    </div>
+
+                                    <a href="https://wa.me/6281234567890?text=Halo%2C%2C%20saya%20tertarik%20dengan%20produk%20*${encodeURIComponent(p.name)}*" target="_blank" class="block text-center w-full bg-black hover:bg-zinc-800 text-white py-2 rounded-lg text-xs font-bold transition">
+                                        Beli via WhatsApp
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-red-500 text-sm">Gagal memuat produk dari server.</div>`;
+            }
+        }
+
+        loadStoreProducts();
+    </script>
 </body>
 </html>
