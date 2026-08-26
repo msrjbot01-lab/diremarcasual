@@ -665,7 +665,7 @@
             const msg = document.getElementById("banner-status-msg");
 
             if (!desktopUrl || !mobileUrl) {
-                alert("Harap pilih gambar untuk Desktop dan Mobile!");
+                alert("Harap tunggu sebentar hingga proses gambar selesai, atau pilih ulang gambar Desktop & Mobile!");
                 return;
             }
 
@@ -696,7 +696,7 @@
             if (banners[index]) {
                 banners[index].status = newStatus;
                 saveBannersLocal(banners);
-                loadBanners();
+                // Cukup simpan ke localStorage tanpa memanggil loadBanners() ulang agar select tidak kehilangan fokus
             }
         }
 
