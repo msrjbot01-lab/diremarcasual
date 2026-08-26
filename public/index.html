@@ -26,6 +26,36 @@
             background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 24px 24px;
         }
+
+        /* Animasi Elegan untuk Judul Hero */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .animate-hero-title {
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .animate-shimmer-text {
+            background: linear-gradient(90deg, #ffffff 0%, #f59e0b 50%, #ffffff 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmer 5s linear infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[#0d0d0f] text-gray-900 antialiased selection:bg-amber-500 selection:text-black">
@@ -34,14 +64,11 @@
     <div class="bg-hero-pattern border-b border-gray-800 text-white relative">
         
         <!-- NAVBAR ATAS -->
-        <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between border-b border-gray-800/60">
+        <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between border-b border-gray-800/60">
             <div class="flex items-center space-x-3">
-                <!-- LOGO WEBSITE (Menggunakan logo01.webp) -->
-                <a href="#" class="flex items-center gap-3 group">
-                    <img src="logo01.webp" alt="Diremar Casual Logo" class="h-9 sm:h-10 w-auto object-contain">
-                    <span class="text-lg sm:text-xl font-black tracking-widest text-white uppercase hidden sm:inline">
-                        DIREMAR CASUAL
-                    </span>
+                <!-- LOGO WEBSITE DIPERBESAR & TEKS DIHILANGKAN -->
+                <a href="#" class="flex items-center group">
+                    <img src="logo01.webp" alt="Diremar Casual Logo" class="h-12 sm:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
                 </a>
             </div>
             
@@ -54,11 +81,11 @@
 
         <!-- HERO SECTION & BANNER SLIDER -->
         <section class="py-12 px-4 text-center">
-            <div class="max-w-3xl mx-auto mb-8">
-                <h1 class="text-3xl sm:text-5xl font-black tracking-tight mb-3 text-white uppercase leading-tight">
+            <div class="max-w-3xl mx-auto mb-8 animate-hero-title">
+                <h1 class="text-3xl sm:text-5xl font-black tracking-tight mb-3 uppercase leading-tight animate-shimmer-text">
                     LANGKAH PASTI, GAYA BERKELAS
                 </h1>
-                <p class="text-gray-400 text-xs sm:text-sm max-w-lg mx-auto font-normal leading-relaxed">
+                <p class="text-gray-400 text-xs sm:text-sm max-w-lg mx-auto font-normal leading-relaxed transition-opacity duration-700 delay-200">
                     Temukan koleksi sneakers original baru dan preloved pilihan dengan kualitas terbaik, siap menyempurnakan setiap langkahmu.
                 </p>
             </div>
