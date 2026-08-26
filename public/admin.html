@@ -13,7 +13,8 @@
         <h1 class="font-bold text-lg tracking-wider">DIREMAR CASUAL // MASTER CONTROL</h1>
         <div class="flex items-center gap-4">
             <a href="index.html" target="_blank" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded transition">Lihat Toko</a>
-            <button onclick="logout()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded transition font-semibold">Logout</button>
+            <!-- Tombol Logout disembunyikan dulu menggunakan kelas 'hidden' -->
+            <button id="logout-btn" onclick="logout()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded transition font-semibold hidden">Logout</button>
         </div>
     </header>
 
@@ -120,7 +121,7 @@
                     </thead>
                     <tbody id="stock-product-list">
                         <tr>
-                            <td colspan="5" class="p-6 text-center text-gray-400">Belum ada produk di stok.</td>
+                            <td colspan="5" class="p-6 text-center text-gray-400">Belum ada barang di menu stok.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -136,10 +137,12 @@
 
         const loginSection = document.getElementById("login-section");
         const dashboardSection = document.getElementById("dashboard-section");
+        const logoutBtn = document.getElementById("logout-btn");
 
         if (sessionStorage.getItem("isLoggedIn") === "true") {
             loginSection.classList.add("hidden");
             dashboardSection.classList.remove("hidden");
+            logoutBtn.classList.remove("hidden"); // Tampilkan tombol logout jika sudah login
             loadStockProducts();
         }
 
@@ -153,6 +156,7 @@
                 sessionStorage.setItem("isLoggedIn", "true");
                 loginSection.classList.add("hidden");
                 dashboardSection.classList.remove("hidden");
+                logoutBtn.classList.remove("hidden"); // Munculkan tombol logout setelah sukses login
                 loadStockProducts();
             } else {
                 msg.textContent = "Username atau Password salah!";
@@ -214,13 +218,11 @@
             let products = getLocalProducts();
 
             if (editId) {
-                // Update produk yang sudah ada
                 products = products.map(p => p.id === parseInt(editId) ? productData : p);
                 document.getElementById("edit-id").value = "";
                 document.getElementById("submit-btn").textContent = "Upload ke Website";
                 msg.textContent = "Produk berhasil diperbarui!";
             } else {
-                // Tambah produk baru di urutan teratas
                 products.unshift(productData);
                 msg.textContent = "Produk berhasil di-upload dan langsung tayang di website!";
             }
@@ -276,7 +278,6 @@
             });
         }
 
-        // Fungsi Edit Produk (Masuk ke form dan isi otomatis)
         function editProduct(id) {
             const products = getLocalProducts();
             const p = products.find(item => item.id === id);
@@ -292,10 +293,9 @@
             document.getElementById("description").value = p.description;
 
             document.getElementById("submit-btn").textContent = "Simpan Perubahan";
-            switchTab('upload'); // Pindah ke tab form upload untuk mengedit
+            switchTab('upload');
         }
 
-        // Fungsi Hapus Produk dari Stok
         function deleteProduct(id) {
             if (confirm("Apakah barang ini sudah habis dan ingin dihapus permanen dari toko?")) {
                 let products = getLocalProducts();
