@@ -42,9 +42,10 @@
     <div id="dashboard-section" class="max-w-7xl mx-auto p-4 md:p-8 hidden">
         
         <!-- Tab Navigasi Admin -->
-        <div class="flex border-b border-gray-300 mb-6 gap-4">
-            <button onclick="switchTab('upload')" id="tab-upload-btn" class="py-2 px-4 font-bold text-sm border-b-2 border-black transition">Tambah Barang Baru</button>
-            <button onclick="switchTab('stock')" id="tab-stock-btn" class="py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition">Menu Stok & Inventaris (<span id="stock-count">0</span>)</button>
+        <div class="flex border-b border-gray-300 mb-6 gap-4 overflow-x-auto">
+            <button onclick="switchTab('upload')" id="tab-upload-btn" class="py-2 px-4 font-bold text-sm border-b-2 border-black transition whitespace-nowrap">Tambah Barang Baru</button>
+            <button onclick="switchTab('stock')" id="tab-stock-btn" class="py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap">Menu Stok & Inventaris (<span id="stock-count">0</span>)</button>
+            <button onclick="switchTab('banner')" id="tab-banner-btn" class="py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap">Banner Settings (<span id="banner-count">0</span>)</button>
         </div>
 
         <!-- MENU 1: TAMBAH BARANG & PREVIEW -->
@@ -164,11 +165,71 @@
             </div>
         </div>
 
+        <!-- MENU 3: BANNER SETTINGS -->
+        <div id="tab-banner" class="space-y-8 hidden">
+            <!-- Form Tambah Banner -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-2xl mx-auto">
+                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website</h2>
+                <p class="text-xs text-gray-500 mb-6">Tambahkan banner promosi atau pengumuman yang akan tampil di halaman utama toko.</p>
+
+                <form id="banner-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Nama Banner</label>
+                        <input type="text" id="banner-name" placeholder="Contoh: Banner Promo Lebaran 2026" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Upload Gambar Banner</label>
+                        <input type="file" id="banner-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
+                        <input type="hidden" id="banner-image-url">
+                        <!-- Panduan Ukuran Fix -->
+                        <div class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+                            <span class="font-bold">⚠️ Panduan Ukuran Fix Banner:</span> Resolusi ideal yang disarankan adalah <strong class="underline">1200 x 400 piksel</strong> (Rasio 3:1) dengan format JPG/PNG agar pas dan tidak terpotong di website.
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Status Awal</label>
+                        <select id="banner-status" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
+                            <option value="active">Aktif (Tampil di Website)</option>
+                            <option value="inactive">Nonaktif (Disembunyikan)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="banner-submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Tambah Banner</button>
+                </form>
+                <p id="banner-status-msg" class="text-center text-xs mt-3 font-medium"></p>
+            </div>
+
+            <!-- Daftar Banner yang Sudah Terpasang -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
+                <h2 class="text-xl font-bold mb-1">Daftar Banner Terpasang</h2>
+                <p class="text-xs text-gray-500 mb-6">Atur status aktif/nonaktif atau hapus banner yang sudah ada.</p>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
+                                <th class="p-3">Preview</th>
+                                <th class="p-3">Nama Banner</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="banner-list">
+                            <tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         // ⚠️ UBAH URL DI BAWAH INI DENGAN URL CLOUDFLARE WORKER MILIKMU SENDIRI
         const API_URL = "https://round-surf-5635.trbmaster.workers.dev/api/products";
+        const API_BANNER_URL = "https://round-surf-5635.trbmaster.workers.dev/api/banners"; // Endpoint opsional jika worker Anda mendukung banner
 
         const ADMIN_USER = "marie";
         const ADMIN_PASS = "diremar2026";
@@ -182,6 +243,7 @@
             dashboardSection.classList.remove("hidden");
             logoutBtn.classList.remove("hidden");
             loadStockProducts();
+            loadBanners();
         }
 
         document.getElementById("login-form").addEventListener("submit", (e) => {
@@ -196,6 +258,7 @@
                 dashboardSection.classList.remove("hidden");
                 logoutBtn.classList.remove("hidden");
                 loadStockProducts();
+                loadBanners();
             } else {
                 msg.textContent = "Username atau Password salah!";
             }
@@ -209,20 +272,33 @@
         function switchTab(tab) {
             const tabUpload = document.getElementById("tab-upload");
             const tabStock = document.getElementById("tab-stock");
+            const tabBanner = document.getElementById("tab-banner");
+            
             const btnUpload = document.getElementById("tab-upload-btn");
             const btnStock = document.getElementById("tab-stock-btn");
+            const btnBanner = document.getElementById("tab-banner-btn");
+
+            // Sembunyikan semua tab
+            tabUpload.classList.add("hidden");
+            tabStock.classList.add("hidden");
+            tabBanner.classList.add("hidden");
+            
+            // Reset style tombol
+            btnUpload.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap";
+            btnStock.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap";
+            btnBanner.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition whitespace-nowrap";
 
             if (tab === 'upload') {
                 tabUpload.classList.remove("hidden");
-                tabStock.classList.add("hidden");
-                btnUpload.className = "py-2 px-4 font-bold text-sm border-b-2 border-black transition";
-                btnStock.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition";
-            } else {
-                tabUpload.classList.add("hidden");
+                btnUpload.className = "py-2 px-4 font-bold text-sm border-b-2 border-black transition whitespace-nowrap";
+            } else if (tab === 'stock') {
                 tabStock.classList.remove("hidden");
-                btnStock.className = "py-2 px-4 font-bold text-sm border-b-2 border-black transition";
-                btnUpload.className = "py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition";
+                btnStock.className = "py-2 px-4 font-bold text-sm border-b-2 border-black transition whitespace-nowrap";
                 loadStockProducts();
+            } else if (tab === 'banner') {
+                tabBanner.classList.remove("hidden");
+                btnBanner.className = "py-2 px-4 font-bold text-sm border-b-2 border-black transition whitespace-nowrap";
+                loadBanners();
             }
         }
 
@@ -235,7 +311,7 @@
         const inputImageUrl = document.getElementById("image_url");
         const inputDescription = document.getElementById("description");
 
-        // Kompres Gambar Otomatis sebelum dijadikan Base64
+        // Kompres Gambar Produk Otomatis sebelum dijadikan Base64
         inputImageFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -245,7 +321,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement("canvas");
-                    const MAX_WIDTH = 800; // Resolusi maksimal lebar gambar
+                    const MAX_WIDTH = 800; 
                     const MAX_HEIGHT = 800;
                     let width = img.width;
                     let height = img.height;
@@ -267,7 +343,6 @@
                     const ctx = canvas.getContext("2d");
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Kompres ke format JPEG dengan kualitas 0.7 (70%) agar file kecil & ringan
                     const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
                     inputImageUrl.value = compressedDataUrl;
                     updatePreview();
@@ -446,6 +521,152 @@
                 } catch (err) {
                     alert("Gagal menghapus produk.");
                 }
+            }
+        }
+
+        // ================= SCRIPT BANNER SETTINGS =================
+        const bannerFileInput = document.getElementById("banner-file");
+        const bannerImageUrlInput = document.getElementById("banner-image-url");
+
+        // Kompres Banner Otomatis (Menyesuaikan rasio 1200x400)
+        bannerFileInput.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const MAX_WIDTH = 1200;
+                    const MAX_HEIGHT = 400;
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Resize proporsional
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = MAX_HEIGHT;
+                    const ctx = canvas.getContext("2d");
+                    
+                    // Fill background putih jika gambar tidak pas rasio 3:1
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
+
+                    // Hitung skala center crop / fit
+                    let hRatio = MAX_WIDTH / width;
+                    let vRatio = MAX_HEIGHT / height;
+                    let ratio = Math.max(hRatio, vRatio);
+                    let centerShift_x = (MAX_WIDTH - width * ratio) / 2;
+                    let centerShift_y = (MAX_HEIGHT - height * ratio) / 2;
+
+                    ctx.drawImage(img, 0, 0, width, height, centerShift_x, centerShift_y, width * ratio, height * ratio);
+
+                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+                    bannerImageUrlInput.value = compressedDataUrl;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Simulasi / Koneksi Data Banner (Menyimpan ke localStorage / API Worker jika ada)
+        function getBannersLocal() {
+            try {
+                return JSON.parse(localStorage.getItem("diremar_banners")) || [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function saveBannersLocal(banners) {
+            localStorage.setItem("diremar_banners", JSON.stringify(banners));
+        }
+
+        function loadBanners() {
+            const banners = getBannersLocal();
+            const tbody = document.getElementById("banner-list");
+            document.getElementById("banner-count").textContent = banners.length;
+
+            if (banners.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            banners.forEach((b, index) => {
+                let statusBadge = b.status === "active" 
+                    ? `<span class="px-2.5 py-1 rounded text-[10px] font-bold bg-green-100 text-green-800 uppercase">Aktif</span>` 
+                    : `<span class="px-2.5 py-1 rounded text-[10px] font-bold bg-gray-100 text-gray-600 uppercase">Nonaktif</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-3 w-36">
+                            <div class="w-32 h-12 bg-gray-100 rounded overflow-hidden border">
+                                <img src="${b.image_url}" class="w-full h-full object-cover" alt="Banner">
+                            </div>
+                        </td>
+                        <td class="p-3 font-bold text-gray-900">${b.name}</td>
+                        <td class="p-3">
+                            <select onchange="updateBannerStatus(${index}, this.value)" class="border rounded px-2 py-1 text-xs bg-white focus:ring-1 focus:ring-black">
+                                <option value="active" ${b.status === 'active' ? 'selected' : ''}>Aktif</option>
+                                <option value="inactive" ${b.status === 'inactive' ? 'selected' : ''}>Nonaktif</option>
+                            </select>
+                        </td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteBanner(${index})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById("banner-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("banner-name").value;
+            const imageUrl = bannerImageUrlInput.value;
+            const status = document.getElementById("banner-status").value;
+            const msg = document.getElementById("banner-status-msg");
+
+            if (!imageUrl) {
+                alert("Silakan pilih gambar banner terlebih dahulu!");
+                return;
+            }
+
+            const banners = getBannersLocal();
+            banners.push({
+                id: Date.now(),
+                name: name,
+                image_url: imageUrl,
+                status: status
+            });
+
+            saveBannersLocal(banners);
+            loadBanners();
+
+            msg.textContent = "Banner berhasil ditambahkan!";
+            msg.className = "text-center text-xs mt-3 font-medium text-green-600";
+            
+            document.getElementById("banner-form").reset();
+            bannerImageUrlInput.value = "";
+
+            setTimeout(() => { msg.textContent = ""; }, 3000);
+        });
+
+        function updateBannerStatus(index, newStatus) {
+            const banners = getBannersLocal();
+            if (banners[index]) {
+                banners[index].status = newStatus;
+                saveBannersLocal(banners);
+                loadBanners();
+            }
+        }
+
+        function deleteBanner(index) {
+            if (confirm("Apakah Anda yakin ingin menghapus banner ini?")) {
+                let banners = getBannersLocal();
+                banners.splice(index, 1);
+                saveBannersLocal(banners);
+                loadBanners();
             }
         }
     </script>
