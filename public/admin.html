@@ -174,29 +174,42 @@
             </div>
         </div>
 
-        <!-- MENU 3: BANNER SETTINGS (Rasio 3:1 / 1200x400 px) -->
+        <!-- MENU 3: BANNER SETTINGS (Dual Upload: Desktop 1200x400 & Mobile 600x400) -->
         <div id="tab-banner" class="space-y-8 hidden">
-            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-2xl mx-auto">
-                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website (Rasio 3:1)</h2>
-                <p class="text-xs text-gray-500 mb-6">Banner menggunakan ukuran 1200 x 400 px agar tampil sempurna dan proporsional di HP maupun Laptop/PC.</p>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-3xl mx-auto">
+                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website (Desktop & Mobile)</h2>
+                <p class="text-xs text-gray-500 mb-6">Upload gambar terpisah untuk tampilan komputer/laptop dan HP dengan ukuran fix yang akurat.</p>
 
-                <form id="banner-form" class="space-y-4">
+                <form id="banner-form" class="space-y-5">
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Nama Banner / Keterangan</label>
-                        <input type="text" id="banner-name" placeholder="Contoh: Special Sneaker Drop" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <input type="text" id="banner-name" placeholder="Contoh: Promo Lebaran / Flash Sale" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Gambar Banner (Otomatis menyesuaikan Rasio 3:1)</label>
-                        <input type="file" id="banner-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
-                        <input type="hidden" id="banner-image-url">
-                        <div class="mt-1.5 p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-[11px] text-blue-800">
-                            📐 <strong>Ukuran Fix:</strong> <code class="font-bold">1200 x 400 px</code> (Rasio 3:1)
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
+                        <!-- Banner Desktop -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1 text-gray-700">Banner Desktop (PC/Laptop)</label>
+                            <input type="file" id="banner-desktop-file" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-white file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-black file:text-white cursor-pointer">
+                            <input type="hidden" id="banner-desktop-url">
+                            <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-800">
+                                📐 Ukuran Fix: <strong class="font-bold">1200 x 400 px</strong> (Rasio 3:1)
+                            </div>
+                        </div>
+
+                        <!-- Banner Mobile -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1 text-gray-700">Banner Mobile (HP)</label>
+                            <input type="file" id="banner-mobile-file" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-white file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-black file:text-white cursor-pointer">
+                            <input type="hidden" id="banner-mobile-url">
+                            <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-800">
+                                📐 Ukuran Fix: <strong class="font-bold">600 x 400 px</strong> (Rasio 3:2)
+                            </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Status Awal</label>
+                        <label class="block text-xs font-semibold uppercase mb-1">Status Banner</label>
                         <select id="banner-status" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
                             <option value="active">Aktif (Tampil di Website)</option>
                             <option value="inactive">Nonaktif (Disembunyikan)</option>
@@ -208,23 +221,24 @@
                 <p id="banner-status-msg" class="text-center text-xs mt-3 font-medium"></p>
             </div>
 
-            <!-- Daftar Banner -->
+            <!-- Daftar Banner Terpasang -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold mb-1">Daftar Banner Terpasang</h2>
-                <p class="text-xs text-gray-500 mb-6">Kelola status keaktifan atau hapus banner lama.</p>
+                <p class="text-xs text-gray-500 mb-6">Kelola status aktif/nonaktif atau hapus banner yang sudah ada.</p>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
-                                <th class="p-3">Preview Banner (3:1)</th>
+                                <th class="p-3">Preview Desktop (3:1)</th>
+                                <th class="p-3">Preview Mobile (3:2)</th>
                                 <th class="p-3">Nama Banner</th>
                                 <th class="p-3">Status</th>
                                 <th class="p-3 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="banner-list">
-                            <tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
+                            <tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -525,11 +539,14 @@
             }
         }
 
-        // --- MANAJEMEN BANNER (Rasio 3:1 / 1200x400 px) ---
-        const bannerFile = document.getElementById("banner-file");
-        const bannerImageUrlInput = document.getElementById("banner-image-url");
+        // --- MANAJEMEN BANNER (DESKTOP 1200x400 & MOBILE 600x400) ---
+        const bannerDesktopFile = document.getElementById("banner-desktop-file");
+        const bannerMobileFile = document.getElementById("banner-mobile-file");
+        const bannerDesktopUrlInput = document.getElementById("banner-desktop-url");
+        const bannerMobileUrlInput = document.getElementById("banner-mobile-url");
 
-        bannerFile.addEventListener("change", function(e) {
+        // Kompresor & Pemotong Otomatis Desktop (1200 x 400 px)
+        bannerDesktopFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
@@ -550,7 +567,36 @@
                     let centerShift_y = (400 - img.height * ratio) / 2;
 
                     ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
-                    bannerImageUrlInput.value = canvas.toDataURL("image/jpeg", 0.85);
+                    bannerDesktopUrlInput.value = canvas.toDataURL("image/jpeg", 0.85);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Kompresor & Pemotong Otomatis Mobile (600 x 400 px)
+        bannerMobileFile.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = 600;
+                    canvas.height = 400;
+                    const ctx = canvas.getContext("2d");
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, 600, 400);
+
+                    let hRatio = 600 / img.width;
+                    let vRatio = 400 / img.height;
+                    let ratio = Math.max(hRatio, vRatio);
+                    let centerShift_x = (600 - img.width * ratio) / 2;
+                    let centerShift_y = (400 - img.height * ratio) / 2;
+
+                    ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+                    bannerMobileUrlInput.value = canvas.toDataURL("image/jpeg", 0.85);
                 };
                 img.src = event.target.result;
             };
@@ -566,18 +612,25 @@
                 document.getElementById("banner-count").textContent = list.length;
 
                 if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = "";
                 list.forEach((b) => {
-                    const imgSrc = b.image || b.desktop_url || "logo01.webp";
+                    const desktopImg = b.desktop_url || b.image || "logo01.webp";
+                    const mobileImg = b.mobile_url || b.image || "logo01.webp";
+                    
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-gray-50 transition">
-                            <td class="p-3 w-48">
-                                <div class="w-40 h-[53px] bg-gray-100 rounded overflow-hidden border">
-                                    <img src="${imgSrc}" class="w-full h-full object-cover" alt="Banner">
+                            <td class="p-3 w-36">
+                                <div class="w-32 h-[42px] bg-gray-100 rounded overflow-hidden border">
+                                    <img src="${desktopImg}" class="w-full h-full object-cover" alt="Desktop Banner">
+                                </div>
+                            </td>
+                            <td class="p-3 w-32">
+                                <div class="w-20 h-[42px] bg-gray-100 rounded overflow-hidden border">
+                                    <img src="${mobileImg}" class="w-full h-full object-cover" alt="Mobile Banner">
                                 </div>
                             </td>
                             <td class="p-3 font-bold text-gray-900">${b.name || b.title || 'Banner'}</td>
@@ -586,7 +639,7 @@
                                     ${b.status === 'inactive' ? 'Nonaktif' : 'Aktif'}
                                 </span>
                             </td>
-                            <td class="p-3 text-center">
+                            <td class="p-3 text-center space-x-2">
                                 <button onclick="deleteBanner(${b.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
                             </td>
                         </tr>
@@ -600,19 +653,22 @@
         document.getElementById("banner-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const name = document.getElementById("banner-name").value;
-            const imageUrl = bannerImageUrlInput.value;
+            const desktopUrl = bannerDesktopUrlInput.value;
+            const mobileUrl = bannerMobileUrlInput.value;
             const status = document.getElementById("banner-status").value;
             const msg = document.getElementById("banner-status-msg");
 
-            if (!imageUrl) {
-                alert("Harap pilih dan tunggu gambar banner selesai dimuat!");
+            if (!desktopUrl || !mobileUrl) {
+                alert("Harap tunggu hingga proses gambar Desktop dan Mobile selesai dimuat!");
                 return;
             }
 
             const bannerData = {
                 id: Date.now(),
                 name: name,
-                image: imageUrl,
+                desktop_url: desktopUrl,
+                mobile_url: mobileUrl,
+                image: desktopUrl,
                 status: status
             };
 
@@ -631,7 +687,8 @@
                     msg.className = "text-center text-xs mt-3 font-medium text-green-600";
                     
                     document.getElementById("banner-form").reset();
-                    bannerImageUrlInput.value = "";
+                    bannerDesktopUrlInput.value = "";
+                    bannerMobileUrlInput.value = "";
                     loadBanners();
                 } else {
                     throw new Error("Gagal menyimpan banner");
