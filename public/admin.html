@@ -13,7 +13,6 @@
         <h1 class="font-bold text-lg tracking-wider">DIREMAR CASUAL // MASTER CONTROL</h1>
         <div class="flex items-center gap-4">
             <a href="index.html" target="_blank" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded transition">Lihat Toko</a>
-            <!-- Tombol Logout disembunyikan dulu menggunakan kelas 'hidden' -->
             <button id="logout-btn" onclick="logout()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded transition font-semibold hidden">Logout</button>
         </div>
     </header>
@@ -48,55 +47,107 @@
             <button onclick="switchTab('stock')" id="tab-stock-btn" class="py-2 px-4 font-bold text-sm text-gray-400 border-b-2 border-transparent transition">Menu Stok & Inventaris (<span id="stock-count">0</span>)</button>
         </div>
 
-        <!-- MENU 1: TAMBAH BARANG -->
-        <div id="tab-upload" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-2xl mx-auto">
-            <h2 class="text-xl font-bold mb-6">Form Upload Produk Sneakers</h2>
+        <!-- MENU 1: TAMBAH BARANG & PREVIEW -->
+        <div id="tab-upload" class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start max-w-5xl mx-auto">
             
-            <form id="product-form" class="space-y-4">
-                <input type="hidden" id="edit-id">
-                <div>
-                    <label class="block text-xs font-semibold uppercase mb-1">Nama Sneakers</label>
-                    <input type="text" id="name" placeholder="Contoh: Nike Air Force 1" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Kondisi Produk</label>
-                        <select id="condition" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
-                            <option value="New">New (Baru)</option>
-                            <option value="Preloved">Preloved (Bekas)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Harga (Rp)</label>
-                        <input type="number" id="price" placeholder="450000" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
-                    </div>
-                </div>
+            <!-- Kolom Kiri: Form Input -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
+                <h2 class="text-xl font-bold mb-6">Form Upload Produk Sneakers</h2>
                 
-                <div class="grid grid-cols-2 gap-4">
+                <form id="product-form" class="space-y-4">
+                    <input type="hidden" id="edit-id">
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Diskon (%) - Opsional</label>
-                        <input type="number" id="discount" value="0" min="0" max="100" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <label class="block text-xs font-semibold uppercase mb-1">Nama Sneakers</label>
+                        <input type="text" id="name" placeholder="Contoh: Nike Air Force 1" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Kondisi Produk</label>
+                            <select id="condition" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
+                                <option value="New">New (Baru)</option>
+                                <option value="Preloved">Preloved (Bekas)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Harga Asli (Rp)</label>
+                            <input type="number" id="price" placeholder="450000" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Diskon (%) - Opsional</label>
+                            <input type="number" id="discount" value="0" min="0" max="100" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Size / Ukuran Tersedia</label>
+                            <input type="text" id="sizes" placeholder="Contoh: 40, 41, 42, 43" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Size / Ukuran Tersedia</label>
-                        <input type="text" id="sizes" placeholder="Contoh: 40, 41, 42, 43" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <label class="block text-xs font-semibold uppercase mb-1">Link Foto Produk (URL)</label>
+                        <input type="url" id="image_url" placeholder="https://images.unsplash.com/..." required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Deskripsi & Informasi Produk</label>
+                        <textarea id="description" rows="3" placeholder="Kondisi mulus, box original lengkap..." class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Upload ke Website</button>
+                </form>
+                <p id="status-msg" class="text-center text-xs mt-3 font-medium"></p>
+            </div>
+
+            <!-- Kolom Kanan: Live Preview Tampilan Kartu Produk -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 sticky top-6">
+                <h2 class="text-sm font-bold uppercase text-gray-400 mb-4 tracking-wider">Live Preview di Website</h2>
+                
+                <!-- Kotak Kartu Produk -->
+                <div class="border rounded-xl overflow-hidden shadow-sm bg-white relative">
+                    <span id="prev-badge" class="absolute top-3 left-3 bg-black text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10">New</span>
+                    
+                    <div class="w-full h-56 bg-gray-100 overflow-hidden relative">
+                        <img id="prev-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" class="w-full h-full object-cover" alt="Preview">
+                        <div id="prev-discount-badge" class="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded hidden">
+                            -<span id="prev-disc-val">0</span>%
+                        </div>
+                    </div>
+
+                    <div class="p-4 space-y-2">
+                        <h3 id="prev-name" class="font-bold text-base text-gray-900 truncate">Nama Sneakers</h3>
+                        <p id="prev-desc" class="text-xs text-gray-500 line-clamp-2">Deskripsi produk akan muncul di sini...</p>
+                        
+                        <div class="pt-2 flex items-baseline gap-2">
+                            <span id="prev-final-price" class="text-lg font-black text-gray-900">Rp 0</span>
+                            <span id="prev-original-price" class="text-xs text-gray-400 line-through hidden">Rp 0</span>
+                        </div>
+
+                        <div class="text-xs font-semibold text-gray-700 bg-gray-50 p-2 rounded">
+                            Size: <span id="prev-sizes" class="font-normal text-gray-600">-</span>
+                        </div>
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold uppercase mb-1">Link Foto Produk (URL)</label>
-                    <input type="url" id="image_url" placeholder="https://images.unsplash.com/..." required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                <!-- Kalkulator Total Ringkas -->
+                <div class="mt-4 p-3 bg-zinc-50 border rounded-lg text-xs space-y-1">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Harga Asli:</span>
+                        <span id="calc-orig" class="font-semibold">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Potongan Diskon:</span>
+                        <span id="calc-disc" class="font-semibold text-red-600">Rp 0</span>
+                    </div>
+                    <div class="border-t pt-1 flex justify-between font-bold text-sm">
+                        <span>Total Harga Bersih:</span>
+                        <span id="calc-total" class="text-green-600">Rp 0</span>
+                    </div>
                 </div>
+            </div>
 
-                <div>
-                    <label class="block text-xs font-semibold uppercase mb-1">Deskripsi & Informasi Produk</label>
-                    <textarea id="description" rows="3" placeholder="Kondisi mulus, box original lengkap, pemakaian wajar..." class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
-                </div>
-
-                <button type="submit" id="submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Upload ke Website</button>
-            </form>
-            <p id="status-msg" class="text-center text-xs mt-3 font-medium"></p>
         </div>
 
         <!-- MENU 2: STOK & INVENTARIS BARANG -->
@@ -131,7 +182,6 @@
     </div>
 
     <script>
-        // Konfigurasi Login
         const ADMIN_USER = "marie";
         const ADMIN_PASS = "diremar2026";
 
@@ -142,7 +192,7 @@
         if (sessionStorage.getItem("isLoggedIn") === "true") {
             loginSection.classList.add("hidden");
             dashboardSection.classList.remove("hidden");
-            logoutBtn.classList.remove("hidden"); // Tampilkan tombol logout jika sudah login
+            logoutBtn.classList.remove("hidden");
             loadStockProducts();
         }
 
@@ -156,7 +206,7 @@
                 sessionStorage.setItem("isLoggedIn", "true");
                 loginSection.classList.add("hidden");
                 dashboardSection.classList.remove("hidden");
-                logoutBtn.classList.remove("hidden"); // Munculkan tombol logout setelah sukses login
+                logoutBtn.classList.remove("hidden");
                 loadStockProducts();
             } else {
                 msg.textContent = "Username atau Password salah!";
@@ -168,7 +218,6 @@
             location.reload();
         }
 
-        // Navigasi Tab Admin
         function switchTab(tab) {
             const tabUpload = document.getElementById("tab-upload");
             const tabStock = document.getElementById("tab-stock");
@@ -189,6 +238,69 @@
             }
         }
 
+        // Live Preview Real-time Listener
+        const inputName = document.getElementById("name");
+        const inputCondition = document.getElementById("condition");
+        const inputPrice = document.getElementById("price");
+        const inputDiscount = document.getElementById("discount");
+        const inputSizes = document.getElementById("sizes");
+        const inputImageUrl = document.getElementById("image_url");
+        const inputDescription = document.getElementById("description");
+
+        function updatePreview() {
+            const name = inputName.value || "Nama Sneakers";
+            const condition = inputCondition.value;
+            const price = parseFloat(inputPrice.value) || 0;
+            const discount = parseFloat(inputDiscount.value) || 0;
+            const sizes = inputSizes.value || "-";
+            const imageUrl = inputImageUrl.value || "https://images.unsplash.com/photo-1542291026-7eec264c27ff";
+            const description = inputDescription.value || "Deskripsi produk akan muncul di sini...";
+
+            // Hitung diskon
+            let finalPrice = price;
+            let discAmount = 0;
+            if (discount > 0 && price > 0) {
+                discAmount = (price * discount) / 100;
+                finalPrice = price - discAmount;
+            }
+
+            // Update Teks Preview Kartu
+            document.getElementById("prev-name").textContent = name;
+            document.getElementById("prev-desc").textContent = description;
+            document.getElementById("prev-sizes").textContent = sizes;
+            document.getElementById("prev-img").src = imageUrl;
+            
+            const badge = document.getElementById("prev-badge");
+            badge.textContent = condition;
+            badge.className = condition === "New" 
+                ? "absolute top-3 left-3 bg-black text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10" 
+                : "absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10";
+
+            // Harga
+            if (discount > 0) {
+                document.getElementById("prev-final-price").textContent = `Rp ${finalPrice.toLocaleString()}`;
+                document.getElementById("prev-original-price.textContent").textContent = `Rp ${price.toLocaleString()}`;
+                document.getElementById("prev-original-price").classList.remove("hidden");
+                document.getElementById("prev-discount-badge").classList.remove("hidden");
+                document.getElementById("prev-disc-val").textContent = discount;
+            } else {
+                document.getElementById("prev-final-price").textContent = `Rp ${price.toLocaleString()}`;
+                document.getElementById("prev-original-price").classList.add("hidden");
+                document.getElementById("prev-discount-badge").classList.add("hidden");
+            }
+
+            // Kalkulator Ringkas
+            document.getElementById("calc-orig").textContent = `Rp ${price.toLocaleString()}`;
+            document.getElementById("calc-disc").textContent = `- Rp ${discAmount.toLocaleString()}`;
+            document.getElementById("calc-total").textContent = `Rp ${finalPrice.toLocaleString()}`;
+        }
+
+        // Pasang event listener ke semua input form
+        [inputName, inputCondition, inputPrice, inputDiscount, inputSizes, inputImageUrl, inputDescription].forEach(el => {
+            el.addEventListener("input", updatePreview);
+            el.addEventListener("change", updatePreview);
+        });
+
         // Penyimpanan Lokal
         function getLocalProducts() {
             return JSON.parse(localStorage.getItem("diremar_products")) || [];
@@ -198,7 +310,7 @@
             localStorage.setItem("diremar_products", JSON.stringify(products));
         }
 
-        // Handle Form Submit (Tambah atau Update Produk)
+        // Handle Form Submit
         document.getElementById("product-form").addEventListener("submit", (e) => {
             e.preventDefault();
             const msg = document.getElementById("status-msg");
@@ -206,13 +318,13 @@
 
             const productData = {
                 id: editId ? parseInt(editId) : Date.now(),
-                name: document.getElementById("name").value,
-                condition: document.getElementById("condition").value,
-                price: parseFloat(document.getElementById("price").value),
-                discount: parseFloat(document.getElementById("discount").value) || 0,
-                sizes: document.getElementById("sizes").value,
-                image_url: document.getElementById("image_url").value,
-                description: document.getElementById("description").value
+                name: inputName.value,
+                condition: inputCondition.value,
+                price: parseFloat(inputPrice.value),
+                discount: parseFloat(inputDiscount.value) || 0,
+                sizes: inputSizes.value,
+                image_url: inputImageUrl.value,
+                description: inputDescription.value
             };
 
             let products = getLocalProducts();
@@ -231,6 +343,7 @@
             msg.className = "text-center text-xs mt-3 font-medium text-green-600";
             
             document.getElementById("product-form").reset();
+            updatePreview(); // Reset preview
             loadStockProducts();
 
             setTimeout(() => { msg.textContent = ""; }, 3000);
@@ -250,6 +363,7 @@
             tbody.innerHTML = "";
             products.forEach(p => {
                 let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-100 text-amber-800";
+                let finalPrice = p.price - ((p.price * p.discount) / 100);
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 flex items-center gap-3">
@@ -263,8 +377,8 @@
                             <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${p.condition}</span>
                         </td>
                         <td class="p-3">
-                            <p class="font-bold">Rp ${p.price.toLocaleString()}</p>
-                            ${p.discount > 0 ? `<span class="text-xs text-red-600 font-semibold">Disc ${p.discount}%</span>` : ''}
+                            <p class="font-bold">Rp ${finalPrice.toLocaleString()}</p>
+                            ${p.discount > 0 ? `<span class="text-xs text-gray-400 line-through">Rp ${p.price.toLocaleString()}</span> <span class="text-xs text-red-600 font-semibold">(${p.discount}%)</span>` : ''}
                         </td>
                         <td class="p-3 text-xs font-semibold text-gray-700">
                             Size: ${p.sizes}
@@ -284,14 +398,15 @@
             if (!p) return;
 
             document.getElementById("edit-id").value = p.id;
-            document.getElementById("name").value = p.name;
-            document.getElementById("condition").value = p.condition;
-            document.getElementById("price").value = p.price;
-            document.getElementById("discount").value = p.discount;
-            document.getElementById("sizes").value = p.sizes;
-            document.getElementById("image_url").value = p.image_url;
-            document.getElementById("description").value = p.description;
+            inputName.value = p.name;
+            inputCondition.value = p.condition;
+            inputPrice.value = p.price;
+            inputDiscount.value = p.discount;
+            inputSizes.value = p.sizes;
+            inputImageUrl.value = p.image_url;
+            inputDescription.value = p.description;
 
+            updatePreview();
             document.getElementById("submit-btn").textContent = "Simpan Perubahan";
             switchTab('upload');
         }
