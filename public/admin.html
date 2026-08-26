@@ -100,7 +100,7 @@
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Pilih Foto Produk dari Perangkat</label>
                         <input type="file" id="image-file" accept="image/*" class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
-                        <p class="text-[10px] text-gray-400 mt-1">Otomatis dikompres agar aman disimpan ke GitHub.</p>
+                        <p class="text-[10px] text-gray-400 mt-1">Otomatis dikompres agar aman disimpan.</p>
                     </div>
 
                     <div>
@@ -154,7 +154,7 @@
         <!-- MENU 2: STOK & INVENTARIS BARANG -->
         <div id="tab-stock" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 hidden">
             <h2 class="text-xl font-bold mb-1">Menu Stok & Master Inventaris</h2>
-            <p class="text-xs text-gray-500 mb-6">Kelola seluruh barang langsung dari penyimpanan GitHub.</p>
+            <p class="text-xs text-gray-500 mb-6">Kelola seluruh barang langsung dari penyimpanan server.</p>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
@@ -168,42 +168,30 @@
                         </tr>
                     </thead>
                     <tbody id="stock-product-list">
-                        <tr><td colspan="5" class="p-6 text-center text-gray-400">Memuat data dari GitHub...</td></tr>
+                        <tr><td colspan="5" class="p-6 text-center text-gray-400">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- MENU 3: BANNER SETTINGS -->
+        <!-- MENU 3: BANNER SETTINGS (Rasio 3:1 / 1200x400 px) -->
         <div id="tab-banner" class="space-y-8 hidden">
-            <!-- Form Tambah Banner -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-2xl mx-auto">
-                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website & Mobile</h2>
-                <p class="text-xs text-gray-500 mb-6">Upload gambar terpisah agar tampilan banner pas di Laptop/PC maupun HP.</p>
+                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website (Rasio 3:1)</h2>
+                <p class="text-xs text-gray-500 mb-6">Banner menggunakan ukuran 1200 x 400 px agar tampil sempurna dan proporsional di HP maupun Laptop/PC.</p>
 
                 <form id="banner-form" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Nama Banner / Keterangan</label>
-                        <input type="text" id="banner-name" placeholder="Contoh: Authentic Collection" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <input type="text" id="banner-name" placeholder="Contoh: Special Sneaker Drop" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                     </div>
 
-                    <!-- Banner Desktop -->
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">1. Gambar Banner Desktop (PC/Laptop)</label>
-                        <input type="file" id="banner-desktop-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
-                        <input type="hidden" id="banner-desktop-url">
+                        <label class="block text-xs font-semibold uppercase mb-1">Gambar Banner (Otomatis menyesuaikan Rasio 3:1)</label>
+                        <input type="file" id="banner-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
+                        <input type="hidden" id="banner-image-url">
                         <div class="mt-1.5 p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-[11px] text-blue-800">
-                            📐 <strong>Ukuran Fix Desktop:</strong> <code class="font-bold">1200 x 400 px</code> (Rasio 3:1)
-                        </div>
-                    </div>
-
-                    <!-- Banner Mobile -->
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">2. Gambar Banner Mobile (HP)</label>
-                        <input type="file" id="banner-mobile-file" accept="image/*" required class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
-                        <input type="hidden" id="banner-mobile-url">
-                        <div class="mt-1.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-800">
-                            📱 <strong>Ukuran Fix Mobile:</strong> <code class="font-bold">600 x 700 px</code> (Rasio Kotak/Potret agar pas di layar HP)
+                            📐 <strong>Ukuran Fix:</strong> <code class="font-bold">1200 x 400 px</code> (Rasio 3:1)
                         </div>
                     </div>
 
@@ -215,29 +203,28 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Simpan & Tambah Banner</button>
+                    <button type="submit" id="banner-submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Simpan & Tambah Banner</button>
                 </form>
                 <p id="banner-status-msg" class="text-center text-xs mt-3 font-medium"></p>
             </div>
 
-            <!-- Daftar Banner yang Sudah Terpasang -->
+            <!-- Daftar Banner -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold mb-1">Daftar Banner Terpasang</h2>
-                <p class="text-xs text-gray-500 mb-6">Melihat preview desktop & mobile secara berdampingan, ubah status, atau hapus banner.</p>
+                <p class="text-xs text-gray-500 mb-6">Kelola status keaktifan atau hapus banner lama.</p>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
-                                <th class="p-3">Preview Desktop</th>
-                                <th class="p-3">Preview Mobile</th>
+                                <th class="p-3">Preview Banner (3:1)</th>
                                 <th class="p-3">Nama Banner</th>
                                 <th class="p-3">Status</th>
                                 <th class="p-3 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="banner-list">
-                            <tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
+                            <tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -247,7 +234,7 @@
     </div>
 
     <script>
-        const API_URL = "https://round-surf-5635.trbmaster.workers.dev/api/products";
+        const API_BASE = "https://round-surf-5635.trbmaster.workers.dev/api";
         const ADMIN_USER = "marie";
         const ADMIN_PASS = "diremar2026";
 
@@ -317,6 +304,7 @@
             }
         }
 
+        // --- MANAJEMEN PRODUK ---
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
         const inputPrice = document.getElementById("price");
@@ -393,20 +381,20 @@
                 : "absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider z-10";
 
             if (discount > 0) {
-                document.getElementById("prev-final-price").textContent = `Rp ${finalPrice.toLocaleString()}`;
-                document.getElementById("prev-original-price").textContent = `Rp ${price.toLocaleString()}`;
+                document.getElementById("prev-final-price").textContent = `Rp ${finalPrice.toLocaleString('id-ID')}`;
+                document.getElementById("prev-original-price").textContent = `Rp ${price.toLocaleString('id-ID')}`;
                 document.getElementById("prev-original-price").classList.remove("hidden");
                 document.getElementById("prev-discount-badge").classList.remove("hidden");
                 document.getElementById("prev-disc-val").textContent = discount;
             } else {
-                document.getElementById("prev-final-price").textContent = `Rp ${price.toLocaleString()}`;
+                document.getElementById("prev-final-price").textContent = `Rp ${price.toLocaleString('id-ID')}`;
                 document.getElementById("prev-original-price").classList.add("hidden");
                 document.getElementById("prev-discount-badge").classList.add("hidden");
             }
 
-            document.getElementById("calc-orig").textContent = `Rp ${price.toLocaleString()}`;
-            document.getElementById("calc-disc").textContent = `- Rp ${discAmount.toLocaleString()}`;
-            document.getElementById("calc-total").textContent = `Rp ${finalPrice.toLocaleString()}`;
+            document.getElementById("calc-orig").textContent = `Rp ${price.toLocaleString('id-ID')}`;
+            document.getElementById("calc-disc").textContent = `- Rp ${discAmount.toLocaleString('id-ID')}`;
+            document.getElementById("calc-total").textContent = `Rp ${finalPrice.toLocaleString('id-ID')}`;
         }
 
         [inputName, inputCondition, inputPrice, inputDiscount, inputSizes, inputDescription].forEach(el => {
@@ -416,7 +404,7 @@
 
         async function loadStockProducts() {
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(`${API_BASE}/products`);
                 const products = await response.json();
                 const tbody = document.getElementById("stock-product-list");
                 document.getElementById("stock-count").textContent = products.length || 0;
@@ -429,11 +417,11 @@
                 tbody.innerHTML = "";
                 products.forEach(p => {
                     let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-100 text-amber-800";
-                    let finalPrice = p.price - ((p.price * p.discount) / 100);
+                    let finalPrice = p.price - ((p.price * (p.discount || 0)) / 100);
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-gray-50 transition">
                             <td class="p-3 flex items-center gap-3">
-                                <img src="${p.image_url}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
+                                <img src="${p.image}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
                                 <div>
                                     <p class="font-bold text-gray-900">${p.name}</p>
                                     <p class="text-xs text-gray-500 line-clamp-1">${p.description || '-'}</p>
@@ -441,12 +429,12 @@
                             </td>
                             <td class="p-3"><span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${p.condition}</span></td>
                             <td class="p-3">
-                                <p class="font-bold">Rp ${finalPrice.toLocaleString()}</p>
-                                ${p.discount > 0 ? `<span class="text-xs text-gray-400 line-through">Rp ${p.price.toLocaleString()}</span> <span class="text-xs text-red-600 font-semibold">(${p.discount}%)</span>` : ''}
+                                <p class="font-bold">Rp ${finalPrice.toLocaleString('id-ID')}</p>
+                                ${p.discount > 0 ? `<span class="text-xs text-gray-400 line-through">Rp ${p.price.toLocaleString('id-ID')}</span> <span class="text-xs text-red-600 font-semibold">(${p.discount}%)</span>` : ''}
                             </td>
-                            <td class="p-3 text-xs font-semibold text-gray-700">Size: ${p.sizes}</td>
+                            <td class="p-3 text-xs font-semibold text-gray-700">Size: ${p.size}</td>
                             <td class="p-3 text-center space-x-2">
-                                <button onclick='editProduct(${JSON.stringify(p)})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
+                                <button onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
                                 <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
                             </td>
                         </tr>
@@ -462,34 +450,34 @@
             const msg = document.getElementById("status-msg");
             const editId = document.getElementById("edit-id").value;
 
-            if (!inputImageUrl.value) {
+            if (!inputImageUrl.value && !editId) {
                 alert("Silakan pilih foto produk terlebih dahulu!");
                 return;
             }
 
             const productData = {
-                id: editId ? parseInt(editId) : null,
+                id: editId ? parseInt(editId) : Date.now(),
                 name: inputName.value,
                 condition: inputCondition.value,
                 price: parseFloat(inputPrice.value),
                 discount: parseFloat(inputDiscount.value) || 0,
-                sizes: inputSizes.value,
-                image_url: inputImageUrl.value,
+                size: inputSizes.value,
+                image: inputImageUrl.value || document.getElementById("prev-img").src,
                 description: inputDescription.value
             };
 
-            msg.textContent = "Mengunggah data & foto ke GitHub...";
+            msg.textContent = "Mengunggah data & foto ke server...";
             msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
 
             try {
-                const res = await fetch(API_URL, {
+                const res = await fetch(`${API_BASE}/products`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(productData)
                 });
                 
                 if (res.ok) {
-                    msg.textContent = "Produk dan foto berhasil disimpan ke GitHub!";
+                    msg.textContent = "Produk berhasil disimpan!";
                     msg.className = "text-center text-xs mt-3 font-medium text-green-600";
                     
                     document.getElementById("product-form").reset();
@@ -514,12 +502,12 @@
             inputName.value = p.name;
             inputCondition.value = p.condition;
             inputPrice.value = p.price;
-            inputDiscount.value = p.discount;
-            inputSizes.value = p.sizes;
-            inputImageUrl.value = p.image_url;
-            inputDescription.value = p.description;
+            inputDiscount.value = p.discount || 0;
+            inputSizes.value = p.size;
+            inputImageUrl.value = p.image;
+            inputDescription.value = p.description || '';
 
-            document.getElementById("prev-img").src = p.image_url;
+            document.getElementById("prev-img").src = p.image;
 
             updatePreview();
             document.getElementById("submit-btn").textContent = "Simpan Perubahan";
@@ -527,9 +515,9 @@
         }
 
         async function deleteProduct(id) {
-            if (confirm("Apakah barang ini ingin dihapus permanen dari GitHub?")) {
+            if (confirm("Apakah barang ini ingin dihapus permanen?")) {
                 try {
-                    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                    await fetch(`${API_BASE}/products/${id}`, { method: "DELETE" });
                     loadStockProducts();
                 } catch (err) {
                     alert("Gagal menghapus produk.");
@@ -537,14 +525,11 @@
             }
         }
 
-        // ================= SCRIPT BANNER SETTINGS =================
-        const bannerDesktopFile = document.getElementById("banner-desktop-file");
-        const bannerDesktopUrlInput = document.getElementById("banner-desktop-url");
-        const bannerMobileFile = document.getElementById("banner-mobile-file");
-        const bannerMobileUrlInput = document.getElementById("banner-mobile-url");
+        // --- MANAJEMEN BANNER (Rasio 3:1 / 1200x400 px) ---
+        const bannerFile = document.getElementById("banner-file");
+        const bannerImageUrlInput = document.getElementById("banner-image-url");
 
-        // Kompres Desktop (1200x400)
-        bannerDesktopFile.addEventListener("change", function(e) {
+        bannerFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
@@ -565,158 +550,110 @@
                     let centerShift_y = (400 - img.height * ratio) / 2;
 
                     ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
-                    bannerDesktopUrlInput.value = canvas.toDataURL("image/jpeg", 0.8);
+                    bannerImageUrlInput.value = canvas.toDataURL("image/jpeg", 0.85);
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         });
 
-        // Kompres Mobile (600x700)
-        bannerMobileFile.addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement("canvas");
-                    canvas.width = 600;
-                    canvas.height = 700;
-                    const ctx = canvas.getContext("2d");
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.fillRect(0, 0, 600, 700);
-
-                    let hRatio = 600 / img.width;
-                    let vRatio = 700 / img.height;
-                    let ratio = Math.max(hRatio, vRatio);
-                    let centerShift_x = (600 - img.width * ratio) / 2;
-                    let centerShift_y = (700 - img.height * ratio) / 2;
-
-                    ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
-                    bannerMobileUrlInput.value = canvas.toDataURL("image/jpeg", 0.8);
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        function getBannersLocal() {
+        async function loadBanners() {
             try {
-                let banners = JSON.parse(localStorage.getItem("diremar_banners"));
-                if (!banners) {
-                    banners = [
-                        {
-                            id: 1710000000001,
-                            name: "Authentic Collection",
-                            desktop_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
-                            mobile_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
-                            status: "active"
-                        }
-                    ];
-                    localStorage.setItem("diremar_banners", JSON.stringify(banners));
+                const response = await fetch(`${API_BASE}/banners`);
+                const banners = await response.json();
+                const tbody = document.getElementById("banner-list");
+                const list = Array.isArray(banners) ? banners : [];
+                document.getElementById("banner-count").textContent = list.length;
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>`;
+                    return;
                 }
-                return banners;
-            } catch(e) {
-                return [];
+
+                tbody.innerHTML = "";
+                list.forEach((b) => {
+                    const imgSrc = b.image || b.desktop_url || "logo01.webp";
+                    tbody.innerHTML += `
+                        <tr class="border-b hover:bg-gray-50 transition">
+                            <td class="p-3 w-48">
+                                <div class="w-40 h-[53px] bg-gray-100 rounded overflow-hidden border">
+                                    <img src="${imgSrc}" class="w-full h-full object-cover" alt="Banner">
+                                </div>
+                            </td>
+                            <td class="p-3 font-bold text-gray-900">${b.name || b.title || 'Banner'}</td>
+                            <td class="p-3">
+                                <span class="px-2 py-1 text-xs rounded font-semibold ${b.status === 'inactive' ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-800'}">
+                                    ${b.status === 'inactive' ? 'Nonaktif' : 'Aktif'}
+                                </span>
+                            </td>
+                            <td class="p-3 text-center">
+                                <button onclick="deleteBanner(${b.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Gagal memuat banner:", err);
             }
         }
 
-        function saveBannersLocal(banners) {
-            localStorage.setItem("diremar_banners", JSON.stringify(banners));
-        }
-
-        function loadBanners() {
-            const banners = getBannersLocal();
-            const tbody = document.getElementById("banner-list");
-            document.getElementById("banner-count").textContent = banners.length;
-
-            if (banners.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = "";
-            banners.forEach((b, index) => {
-                tbody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="p-3 w-36">
-                            <div class="w-32 h-12 bg-gray-100 rounded overflow-hidden border">
-                                <img src="${b.desktop_url || b.image_url}" class="w-full h-full object-cover" alt="Desktop Banner">
-                            </div>
-                        </td>
-                        <td class="p-3 w-28">
-                            <div class="w-16 h-16 bg-gray-100 rounded overflow-hidden border mx-auto">
-                                <img src="${b.mobile_url || b.desktop_url || b.image_url}" class="w-full h-full object-cover" alt="Mobile Banner">
-                            </div>
-                        </td>
-                        <td class="p-3 font-bold text-gray-900">${b.name}</td>
-                        <td class="p-3">
-                            <select onchange="updateBannerStatus(${index}, this.value)" class="border rounded px-2 py-1 text-xs bg-white focus:ring-1 focus:ring-black">
-                                <option value="active" ${b.status === 'active' ? 'selected' : ''}>Aktif</option>
-                                <option value="inactive" ${b.status === 'inactive' ? 'selected' : ''}>Nonaktif</option>
-                            </select>
-                        </td>
-                        <td class="p-3 text-center">
-                            <button onclick="deleteBanner(${index})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        document.getElementById("banner-form").addEventListener("submit", (e) => {
+        document.getElementById("banner-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const name = document.getElementById("banner-name").value;
-            const desktopUrl = bannerDesktopUrlInput.value;
-            const mobileUrl = bannerMobileUrlInput.value;
+            const imageUrl = bannerImageUrlInput.value;
             const status = document.getElementById("banner-status").value;
             const msg = document.getElementById("banner-status-msg");
 
-            if (!desktopUrl || !mobileUrl) {
-                alert("Harap tunggu sebentar hingga proses gambar selesai, atau pilih ulang gambar Desktop & Mobile!");
+            if (!imageUrl) {
+                alert("Harap pilih dan tunggu gambar banner selesai dimuat!");
                 return;
             }
 
-            const banners = getBannersLocal();
-            banners.push({
+            const bannerData = {
                 id: Date.now(),
                 name: name,
-                desktop_url: desktopUrl,
-                mobile_url: mobileUrl,
+                image: imageUrl,
                 status: status
-            });
+            };
 
-            saveBannersLocal(banners);
-            loadBanners();
+            msg.textContent = "Menyimpan banner...";
+            msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
 
-            msg.textContent = "Banner berhasil ditambahkan!";
-            msg.className = "text-center text-xs mt-3 font-medium text-green-600";
-            
-            document.getElementById("banner-form").reset();
-            bannerDesktopUrlInput.value = "";
-            bannerMobileUrlInput.value = "";
+            try {
+                const res = await fetch(`${API_BASE}/banners`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(bannerData)
+                });
+
+                if (res.ok) {
+                    msg.textContent = "Banner berhasil ditambahkan!";
+                    msg.className = "text-center text-xs mt-3 font-medium text-green-600";
+                    
+                    document.getElementById("banner-form").reset();
+                    bannerImageUrlInput.value = "";
+                    loadBanners();
+                } else {
+                    throw new Error("Gagal menyimpan banner");
+                }
+            } catch (err) {
+                msg.textContent = "Terjadi kesalahan saat menyimpan banner.";
+                msg.className = "text-center text-xs mt-3 font-medium text-red-600";
+            }
 
             setTimeout(() => { msg.textContent = ""; }, 3000);
         });
 
-        function updateBannerStatus(index, newStatus) {
-            const banners = getBannersLocal();
-            if (banners[index]) {
-                banners[index].status = newStatus;
-                saveBannersLocal(banners);
-            }
-        }
-
-        function deleteBanner(index) {
+        async function deleteBanner(id) {
             if (confirm("Apakah Anda yakin ingin menghapus banner ini?")) {
-                let banners = getBannersLocal();
-                banners.splice(index, 1);
-                saveBannersLocal(banners);
-                loadBanners();
+                try {
+                    await fetch(`${API_BASE}/banners/${id}`, { method: "DELETE" });
+                    loadBanners();
+                } catch (err) {
+                    alert("Gagal menghapus banner.");
+                }
             }
         }
     </script>
-
 </body>
 </html>
