@@ -61,7 +61,7 @@
         <div id="tab-upload" class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start max-w-5xl mx-auto">
             
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
-                <h2 class="text-xl font-bold mb-6">Form Upload Produk Sneakers</h2>
+                <h2 id="form-title" class="text-xl font-bold mb-6">Form Upload Produk Sneakers</h2>
                 
                 <form id="product-form" class="space-y-4">
                     <input type="hidden" id="edit-id">
@@ -118,9 +118,17 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Pilih Foto Produk (Maksimal 5 Gambar)</label>
+                        <label class="block text-xs font-semibold uppercase mb-1">Upload Foto Produk Baru</label>
                         <input type="file" id="image-file" accept="image/*" multiple class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
                         <p class="text-[10px] text-gray-400 mt-1">Anda bisa memilih hingga 5 foto sekaligus. Otomatis dikompres aman.</p>
+                    </div>
+
+                    <!-- CONTAINER PREVIEW & ATUR FOTO UTAMA -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Manajemen Foto & Pilih Foto Utama (Thumbnail)</label>
+                        <div id="photo-manager-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-gray-50 p-3 rounded-lg border min-h-[100px] items-center">
+                            <span class="text-xs text-gray-400 col-span-full text-center">Belum ada foto di-upload.</span>
+                        </div>
                     </div>
 
                     <div>
@@ -128,7 +136,10 @@
                         <textarea id="description" rows="3" placeholder="Kondisi mulus, box original lengkap..." class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
                     </div>
 
-                    <button type="submit" id="submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Upload ke Website</button>
+                    <div class="flex gap-2">
+                        <button type="submit" id="submit-btn" class="flex-grow bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Upload ke Website</button>
+                        <button type="button" id="cancel-edit-btn" onclick="cancelEdit()" class="hidden bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-bold hover:bg-gray-300 transition text-sm">Batal</button>
+                    </div>
                 </form>
                 <p id="status-msg" class="text-center text-xs mt-3 font-medium"></p>
             </div>
@@ -343,19 +354,20 @@
         const inputImageUrl = document.getElementById("image_url");
         const inputDescription = document.getElementById("description");
 
+        let currentUploadedImages = []; // Array menampung semua gambar produk saat ini
+        let thumbnailIndex = 0;        // Indeks gambar yang dipilih sebagai utama/thumbnail
+
         inputImageFile.addEventListener("change", function(e) {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
 
-            if (files.length > 5) {
-                alert("Maksimal hanya boleh memilih 5 foto produk!");
+            if (currentUploadedImages.length + files.length > 5) {
+                alert("Maksimal total foto produk adalah 5 gambar!");
                 inputImageFile.value = "";
                 return;
             }
 
             let processedCount = 0;
-            let base64Images = [];
-
             files.forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = function(event) {
@@ -379,13 +391,12 @@
                         ctx.drawImage(img, 0, 0, width, height);
 
                         const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
-                        base64Images.push(compressedDataUrl);
+                        currentUploadedImages.push(compressedDataUrl);
                         processedCount++;
 
                         if (processedCount === files.length) {
-                            inputImageUrl.value = JSON.stringify(base64Images);
-                            document.getElementById("prev-img").src = base64Images[0];
-                            updatePreview();
+                            inputImageFile.value = ""; // Reset input file
+                            refreshPhotoManager();
                         }
                     };
                     img.src = event.target.result;
@@ -393,6 +404,66 @@
                 reader.readAsDataURL(file);
             });
         });
+
+        function refreshPhotoManager() {
+            const container = document.getElementById("photo-manager-container");
+            container.innerHTML = "";
+
+            if (currentUploadedImages.length === 0) {
+                container.innerHTML = `<span class="text-xs text-gray-400 col-span-full text-center">Belum ada foto di-upload.</span>`;
+                inputImageUrl.value = "";
+                document.getElementById("prev-img").src = "https://images.unsplash.com/photo-1542291026-7eec264c27ff";
+                return;
+            }
+
+            // Pastikan thumbnailIndex valid
+            if (thumbnailIndex >= currentUploadedImages.length) {
+                thumbnailIndex = 0;
+            }
+
+            currentUploadedImages.forEach((imgUrl, idx) => {
+                const isMain = idx === thumbnailIndex;
+                const div = document.createElement("div");
+                div.className = `relative border-2 rounded-lg p-1 bg-white flex flex-col items-center gap-1 ${isMain ? 'border-black ring-2 ring-black/20' : 'border-gray-200'}`;
+                
+                div.innerHTML = `
+                    <div class="w-full h-20 bg-gray-100 rounded overflow-hidden relative">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                        ${isMain ? '<span class="absolute top-1 left-1 bg-black text-white text-[9px] font-bold px-1.5 py-0.5 rounded">UTAMA</span>' : ''}
+                    </div>
+                    <div class="flex justify-between w-full text-[10px] gap-1">
+                        <button type="button" onclick="setThumbnail(${idx})" class="flex-grow py-0.5 px-1 rounded font-semibold ${isMain ? 'bg-black text-white cursor-default' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}">${isMain ? 'Thumbnail' : 'Jadikan Utama'}</button>
+                        <button type="button" onclick="removePhoto(${idx})" class="bg-red-50 hover:bg-red-600 hover:text-white text-red-600 py-0.5 px-1.5 rounded font-bold">Hapus</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            // Susun ulang array agar foto utama berada di posisi pertama (index 0) untuk kompatibilitas frontend toko
+            let rearranged = [...currentUploadedImages];
+            if (thumbnailIndex > 0) {
+                const mainImg = rearranged.splice(thumbnailIndex, 1)[0];
+                rearranged.unshift(mainImg);
+                thumbnailIndex = 0; // setelah di-unshift, posisi utama jadi 0
+            }
+
+            inputImageUrl.value = JSON.stringify(rearranged);
+            document.getElementById("prev-img").src = rearranged[0];
+            updatePreview();
+        }
+
+        function setThumbnail(idx) {
+            thumbnailIndex = idx;
+            refreshPhotoManager();
+        }
+
+        function removePhoto(idx) {
+            currentUploadedImages.splice(idx, 1);
+            if (thumbnailIndex >= currentUploadedImages.length) {
+                thumbnailIndex = Math.max(0, currentUploadedImages.length - 1);
+            }
+            refreshPhotoManager();
+        }
 
         function getSelectedSizes() {
             const checkboxes = document.querySelectorAll('input[name="product-size"]:checked');
@@ -497,7 +568,7 @@
                                 <img src="${displayImg}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
                                 <div>
                                     <p class="font-bold text-gray-900">${p.name}</p>
-                                    <p class="text-xs text-gray-500 line-clamp-1">${p.description || '-'}</p>
+                                    <p class="text-xs text-gray-500 line-clamp-1">Kode: ${p.code || '-'} | ${p.description || '-'}</p>
                                 </div>
                             </td>
                             <td class="p-3"><span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${p.condition}</span></td>
@@ -533,20 +604,9 @@
             const msg = document.getElementById("status-msg");
             const editId = document.getElementById("edit-id").value;
 
-            if (!inputImageUrl.value && !editId) {
+            if (currentUploadedImages.length === 0) {
                 alert("Silakan pilih minimal 1 foto produk terlebih dahulu!");
                 return;
-            }
-
-            let finalImagesArr = [];
-            let rawVal = inputImageUrl.value;
-            
-            if (rawVal) {
-                try {
-                    finalImagesArr = JSON.parse(rawVal);
-                } catch(err) {
-                    finalImagesArr = [rawVal];
-                }
             }
 
             const selectedSizes = getSelectedSizes();
@@ -555,16 +615,24 @@
                 return;
             }
 
+            // Generate kode produk otomatis jika produk baru (_diremar di akhir)
+            let productCode = editId ? document.getElementById("edit-code")?.value : "";
+            if (!editId || !productCode) {
+                const randomNum = Math.floor(100000 + Math.random() * 900000);
+                productCode = `${randomNum}_diremar`;
+            }
+
             const productData = {
                 id: editId ? parseInt(editId) : Date.now(),
+                code: productCode,
                 name: inputName.value,
                 condition: inputCondition.value,
                 price: parseFloat(inputPrice.value),
                 discount: parseFloat(inputDiscount.value) || 0,
                 size: selectedSizes,
                 wa_type: inputWaType.value,
-                image: finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src,
-                images: finalImagesArr.length > 0 ? finalImagesArr : [document.getElementById("prev-img").src],
+                image: currentUploadedImages[0],
+                images: currentUploadedImages,
                 description: inputDescription.value
             };
 
@@ -582,12 +650,7 @@
                     msg.textContent = "Produk berhasil disimpan dan dipublikasikan!";
                     msg.className = "text-center text-xs mt-3 font-medium text-green-600";
                     
-                    document.getElementById("product-form").reset();
-                    document.getElementById("edit-id").value = "";
-                    document.getElementById("image_url").value = "";
-                    document.querySelectorAll('input[name="product-size"]').forEach(cb => cb.checked = false);
-                    document.getElementById("submit-btn").textContent = "Upload ke Website";
-                    updatePreview();
+                    cancelEdit();
                     loadStockProducts();
                 } else {
                     throw new Error("Gagal menyimpan ke server");
@@ -603,6 +666,17 @@
 
         function editProduct(p) {
             document.getElementById("edit-id").value = p.id;
+            
+            // Simpan kode tersembunyi untuk mempertahankan kode lama saat edit
+            let codeInput = document.getElementById("edit-code");
+            if (!codeInput) {
+                codeInput = document.createElement("input");
+                codeInput.type = "hidden";
+                codeInput.id = "edit-code";
+                document.getElementById("product-form").appendChild(codeInput);
+            }
+            codeInput.value = p.code || '';
+
             inputName.value = p.name;
             inputCondition.value = p.condition;
             inputPrice.value = p.price;
@@ -615,19 +689,39 @@
                 cb.checked = productSizes.includes(cb.value);
             });
 
-            let targetImg = p.image;
+            // Muat keseluruhan gambar lama ke dalam photo manager
             if (Array.isArray(p.images) && p.images.length > 0) {
-                inputImageUrl.value = JSON.stringify(p.images);
-                targetImg = p.images[0];
+                currentUploadedImages = [...p.images];
+            } else if (p.image) {
+                currentUploadedImages = [p.image];
             } else {
-                inputImageUrl.value = p.image || "";
+                currentUploadedImages = [];
             }
+            thumbnailIndex = 0;
+            refreshPhotoManager();
 
-            document.getElementById("prev-img").src = targetImg || "https://images.unsplash.com/photo-1542291026-7eec264c27ff";
-
-            updatePreview();
+            document.getElementById("form-title").textContent = "Edit Produk / Inventaris";
             document.getElementById("submit-btn").textContent = "Simpan Perubahan";
+            document.getElementById("cancel-edit-btn").classList.remove("hidden");
+            
+            // Edit langsung di tempat (tetap di tab upload/edit form tanpa pindah menu utama, tapi scroll ke atas form)
             switchTab('upload');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            document.getElementById("product-form").reset();
+            document.getElementById("edit-id").value = "";
+            document.getElementById("image_url").value = "";
+            currentUploadedImages = [];
+            thumbnailIndex = 0;
+            refreshPhotoManager();
+            document.querySelectorAll('input[name="product-size"]').forEach(cb => cb.checked = false);
+            
+            document.getElementById("form-title").textContent = "Form Upload Produk Sneakers";
+            document.getElementById("submit-btn").textContent = "Upload ke Website";
+            document.getElementById("cancel-edit-btn").classList.add("hidden");
+            updatePreview();
         }
 
         async function deleteProduct(id) {
