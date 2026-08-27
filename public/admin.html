@@ -98,9 +98,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Pilih Foto Produk dari Perangkat</label>
-                        <input type="file" id="image-file" accept="image/*" class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
-                        <p class="text-[10px] text-gray-400 mt-1">Otomatis dikompres agar aman disimpan.</p>
+                        <label class="block text-xs font-semibold uppercase mb-1">Pilih Foto Produk (Maksimal 5 Gambar)</label>
+                        <input type="file" id="image-file" accept="image/*" multiple class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 cursor-pointer">
+                        <p class="text-[10px] text-gray-400 mt-1">Anda bisa memilih hingga 5 foto sekaligus. Otomatis dikompres aman.</p>
                     </div>
 
                     <div>
@@ -174,7 +174,7 @@
             </div>
         </div>
 
-        <!-- MENU 3: BANNER SETTINGS (Dual Upload: Desktop 1200x400 & Mobile 600x400) -->
+        <!-- MENU 3: BANNER SETTINGS -->
         <div id="tab-banner" class="space-y-8 hidden">
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-3xl mx-auto">
                 <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website (Desktop & Mobile)</h2>
@@ -318,7 +318,7 @@
             }
         }
 
-        // --- MANAJEMEN PRODUK ---
+        // --- MANAJEMEN PRODUK & MULTI FOTO (MAKSIMAL 5) ---
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
         const inputPrice = document.getElementById("price");
@@ -329,42 +329,63 @@
         const inputDescription = document.getElementById("description");
 
         inputImageFile.addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement("canvas");
-                    const MAX_WIDTH = 800; 
-                    const MAX_HEIGHT = 800;
-                    let width = img.width;
-                    let height = img.height;
+            if (files.length > 5) {
+                alert("Maksimal hanya boleh memilih 5 foto produk!");
+                inputImageFile.value = "";
+                return;
+            }
 
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
+            let processedCount = 0;
+            let base64Images = [];
+
+            files.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement("canvas");
+                        const MAX_WIDTH = 800; 
+                        const MAX_HEIGHT = 800;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
                         }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+                        base64Images.push(compressedDataUrl);
+                        processedCount++;
+
+                        // Jika semua file sudah selesai dikompres
+                        if (processedCount === files.length) {
+                            // Simpan array gambar ke hidden input (atau simpan gabungan string jika dibutuhkan)
+                            inputImageUrl.value = JSON.stringify(base64Images);
+                            // Set gambar pertama sebagai preview utama
+                            document.getElementById("prev-img").src = base64Images[0];
+                            updatePreview();
                         }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    inputImageUrl.value = canvas.toDataURL("image/jpeg", 0.7);
-                    updatePreview();
+                    };
+                    img.src = event.target.result;
                 };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+                reader.readAsDataURL(file);
+            });
         });
 
         function updatePreview() {
@@ -373,7 +394,6 @@
             const price = parseFloat(inputPrice.value) || 0;
             const discount = parseFloat(inputDiscount.value) || 0;
             const sizes = inputSizes.value || "-";
-            const imageUrl = inputImageUrl.value || "https://images.unsplash.com/photo-1542291026-7eec264c27ff";
             const description = inputDescription.value || "Deskripsi produk...";
 
             let finalPrice = price;
@@ -386,7 +406,6 @@
             document.getElementById("prev-name").textContent = name;
             document.getElementById("prev-desc").textContent = description;
             document.getElementById("prev-sizes").textContent = sizes;
-            document.getElementById("prev-img").src = imageUrl;
             
             const badge = document.getElementById("prev-badge");
             badge.textContent = condition;
@@ -432,10 +451,22 @@
                 products.forEach(p => {
                     let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-100 text-amber-800";
                     let finalPrice = p.price - ((p.price * (p.discount || 0)) / 100);
+                    
+                    // Mendukung produk dengan single image (string) maupun multi images (array)
+                    let displayImg = p.image;
+                    if (Array.isArray(p.images) && p.images.length > 0) {
+                        displayImg = p.images[0];
+                    } else if (typeof p.image === 'string' && p.image.startsWith('[')) {
+                        try {
+                            const parsed = JSON.parse(p.image);
+                            if (Array.isArray(parsed) && parsed.length > 0) displayImg = parsed[0];
+                        } catch(e) {}
+                    }
+
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-gray-50 transition">
                             <td class="p-3 flex items-center gap-3">
-                                <img src="${p.image}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
+                                <img src="${displayImg}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
                                 <div>
                                     <p class="font-bold text-gray-900">${p.name}</p>
                                     <p class="text-xs text-gray-500 line-clamp-1">${p.description || '-'}</p>
@@ -465,8 +496,19 @@
             const editId = document.getElementById("edit-id").value;
 
             if (!inputImageUrl.value && !editId) {
-                alert("Silakan pilih foto produk terlebih dahulu!");
+                alert("Silakan pilih minimal 1 foto produk terlebih dahulu!");
                 return;
+            }
+
+            let finalImagesArr = [];
+            let rawVal = inputImageUrl.value;
+            
+            if (rawVal) {
+                try {
+                    finalImagesArr = JSON.parse(rawVal);
+                } catch(err) {
+                    finalImagesArr = [rawVal];
+                }
             }
 
             const productData = {
@@ -476,7 +518,8 @@
                 price: parseFloat(inputPrice.value),
                 discount: parseFloat(inputDiscount.value) || 0,
                 size: inputSizes.value,
-                image: inputImageUrl.value || document.getElementById("prev-img").src,
+                image: finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src,
+                images: finalImagesArr.length > 0 ? finalImagesArr : [document.getElementById("prev-img"].src],
                 description: inputDescription.value
             };
 
@@ -518,10 +561,17 @@
             inputPrice.value = p.price;
             inputDiscount.value = p.discount || 0;
             inputSizes.value = p.size;
-            inputImageUrl.value = p.image;
             inputDescription.value = p.description || '';
 
-            document.getElementById("prev-img").src = p.image;
+            let targetImg = p.image;
+            if (Array.isArray(p.images) && p.images.length > 0) {
+                inputImageUrl.value = JSON.stringify(p.images);
+                targetImg = p.images[0];
+            } else {
+                inputImageUrl.value = p.image || "";
+            }
+
+            document.getElementById("prev-img").src = targetImg || "https://images.unsplash.com/photo-1542291026-7eec264c27ff";
 
             updatePreview();
             document.getElementById("submit-btn").textContent = "Simpan Perubahan";
@@ -539,13 +589,12 @@
             }
         }
 
-        // --- MANAJEMEN BANNER (DESKTOP 1200x400 & MOBILE 600x400) ---
+        // --- MANAJEMEN BANNER ---
         const bannerDesktopFile = document.getElementById("banner-desktop-file");
         const bannerMobileFile = document.getElementById("banner-mobile-file");
         const bannerDesktopUrlInput = document.getElementById("banner-desktop-url");
         const bannerMobileUrlInput = document.getElementById("banner-mobile-url");
 
-        // Kompresor & Pemotong Otomatis Desktop (1200 x 400 px)
         bannerDesktopFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -574,7 +623,6 @@
             reader.readAsDataURL(file);
         });
 
-        // Kompresor & Pemotong Otomatis Mobile (600 x 400 px)
         bannerMobileFile.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -664,7 +712,6 @@
                 return;
             }
 
-            // Memastikan kedua format properti (name & title) dikirim agar sinkron dengan berbagai script index.html
             const bannerData = {
                 id: Date.now(),
                 name: name,
