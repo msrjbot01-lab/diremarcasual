@@ -104,7 +104,6 @@
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-2">Pilih Ukuran (Size Tersedia)</label>
                         <div class="grid grid-cols-5 gap-2 bg-gray-50 p-3 rounded-lg border" id="size-checkboxes">
-                            <!-- Checkbox generated via JS -->
                             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="36" class="rounded"> 36</label>
                             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="37" class="rounded"> 37</label>
                             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="38" class="rounded"> 38</label>
@@ -594,6 +593,7 @@
                     throw new Error("Gagal menyimpan ke server");
                 }
             } catch (err) {
+                console.error("Error upload produk:", err);
                 msg.textContent = "Terjadi kesalahan saat meng-upload data.";
                 msg.className = "text-center text-xs mt-3 font-medium text-red-600";
             }
@@ -610,7 +610,6 @@
             inputWaType.value = p.wa_type || 'tanya';
             inputDescription.value = p.description || '';
 
-            // Centang ulang checkbox size sesuai data produk
             const productSizes = p.size ? p.size.split(", ").map(s => s.trim()) : [];
             document.querySelectorAll('input[name="product-size"]').forEach(cb => {
                 cb.checked = productSizes.includes(cb.value);
@@ -718,7 +717,7 @@
                 }
 
                 tbody.innerHTML = "";
-                list.layers = list.forEach((b) => {
+                list.forEach((b) => {
                     const desktopImg = b.desktop_url || b.image || "logo01.webp";
                     const mobileImg = b.mobile_url || b.image || "logo01.webp";
                     const bannerTitle = b.name || b.title || 'Banner';
@@ -782,6 +781,7 @@
                     throw new Error("Gagal menyimpan banner");
                 }
             } catch (err) {
+                console.error("Error upload banner:", err);
                 msg.textContent = "Terjadi kesalahan saat menyimpan banner.";
                 msg.className = "text-center text-xs mt-3 font-medium text-red-600";
             }
