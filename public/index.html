@@ -133,7 +133,14 @@
                 </div>
                 <div class="p-5 sm:p-8 flex flex-col justify-between">
                     <div>
-                        <h3 id="modalTitle" class="text-lg sm:text-2xl font-bold text-gray-900 mb-2"></h3>
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <h3 id="modalTitle" class="text-lg sm:text-2xl font-bold text-gray-900"></h3>
+                        </div>
+                        <!-- SKU AUTO GENERATE -->
+                        <div class="mb-3">
+                            <span id="modalSku" class="text-[11px] font-mono font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 inline-block"></span>
+                        </div>
+
                         <div class="flex items-baseline gap-3 mb-3">
                             <span id="modalPrice" class="text-xl sm:text-2xl font-extrabold text-gray-900"></span>
                             <span id="modalOldPrice" class="text-xs sm:text-sm text-gray-400 line-through"></span>
@@ -154,7 +161,7 @@
                     <div>
                         <a id="modalWaBtn" href="#" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/10 text-xs sm:text-sm">
                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                            <span>Pesan via WhatsApp</span>
+                            <span id="modalWaBtnText">Pesan Sekarang via WhatsApp</span>
                         </a>
                     </div>
                 </div>
@@ -281,6 +288,14 @@
             }
         }
 
+        // Fungsi Helper untuk Auto-Generate SKU jika belum ada dari database
+        function getOrGenerateSku(p, index) {
+            if (p.sku && p.sku.trim() !== '') return p.sku;
+            const prefix = (p.name || 'DRM').substring(0, 3).toUpperCase();
+            const idNum = p.id ? String(p.id).padStart(3, '0') : String(index + 1).padStart(3, '0');
+            return `SKU-${prefix}-${idNum}`;
+        }
+
         function renderProducts(products) {
             const grid = document.getElementById('productGrid');
             const emptyState = document.getElementById('emptyState');
@@ -296,11 +311,7 @@
                 emptyState.classList.add('hidden');
             }
 
-            products.forEach(p => {
-                const rawPrice = parseFloat(p.price) || 0;
-                const discount = parseFloat(p.discount) || 0;
-                const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
-                
+            products.forEach((p, idx) => {
                 let displayImage = 'logo01.webp';
                 if (Array.isArray(p.images) && p.images.length > 0) {
                     displayImage = p.images[0];
@@ -310,31 +321,17 @@
                     displayImage = p.image || p.image_url || 'logo01.webp';
                 }
 
-                const productCondition = p.condition || 'New';
-
                 const card = document.createElement('div');
                 card.className = "group bg-white border border-gray-200/80 rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition duration-300 flex flex-col";
-                card.onclick = () => openModal(p);
+                card.onclick = () => openModal(p, idx);
 
+                // THUMBNAIL BERSIH: HANYA FOTO & NAMA PRODUK
                 card.innerHTML = `
                     <div class="relative w-full h-44 sm:h-56 bg-gray-100 overflow-hidden">
                         <img src="${displayImage}" alt="${p.name || 'Sneakers'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        ${discount > 0 ? `<span class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-red-600 text-white text-[9px] sm:text-[10px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded shadow">-${discount}%</span>` : ''}
-                        <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-gray-900 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 sm:py-1 rounded uppercase tracking-wider">${productCondition}</span>
                     </div>
-                    <div class="p-3 sm:p-5 flex flex-col flex-grow justify-between">
-                        <div>
-                            <h3 class="font-bold text-xs sm:text-base text-gray-900 group-hover:text-gray-600 transition truncate">${p.name || 'Sneakers'}</h3>
-                        </div>
-                        <div class="mt-3 pt-2 sm:mt-4 sm:pt-3 border-t border-gray-100 flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] sm:text-xs text-gray-400 block">Harga</span>
-                                <span class="text-xs sm:text-base font-extrabold text-gray-900">Rp ${finalPrice.toLocaleString('id-ID')}</span>
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-900 group-hover:underline hidden sm:inline-block">
-                                Detail &rarr;
-                            </span>
-                        </div>
+                    <div class="p-3 sm:p-4 flex flex-col flex-grow justify-center">
+                        <h3 class="font-bold text-xs sm:text-sm text-gray-900 group-hover:text-gray-600 transition text-center truncate">${p.name || 'Sneakers'}</h3>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -347,7 +344,7 @@
             renderProducts(filtered);
         });
 
-        function openModal(p) {
+        function openModal(p, idx) {
             const rawPrice = parseFloat(p.price) || 0;
             const discount = parseFloat(p.discount) || 0;
             const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
@@ -366,9 +363,11 @@
             }
 
             const productCondition = p.condition || 'New';
+            const generatedSku = getOrGenerateSku(p, idx || 0);
 
             document.getElementById('modalImage').src = currentImages[0];
             document.getElementById('modalTitle').innerText = p.name || '-';
+            document.getElementById('modalSku').innerText = `SKU: ${generatedSku}`;
             document.getElementById('modalPrice').innerText = `Rp ${finalPrice.toLocaleString('id-ID')}`;
             
             const oldPriceEl = document.getElementById('modalOldPrice');
@@ -388,10 +387,10 @@
             galleryContainer.innerHTML = '';
             if (currentImages.length > 1) {
                 galleryContainer.classList.remove('hidden');
-                currentImages.forEach((imgUrl, idx) => {
+                currentImages.forEach((imgUrl, i) => {
                     const thumb = document.createElement('img');
                     thumb.src = imgUrl;
-                    thumb.className = `w-14 h-14 object-cover rounded-lg cursor-pointer border-2 transition ${idx === 0 ? 'border-emerald-600 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`;
+                    thumb.className = `w-14 h-14 object-cover rounded-lg cursor-pointer border-2 transition ${i === 0 ? 'border-emerald-600 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`;
                     thumb.onclick = () => {
                         document.getElementById('modalImage').src = imgUrl;
                         Array.from(galleryContainer.children).forEach(el => el.classList.remove('border-emerald-600', 'opacity-100'));
@@ -417,18 +416,18 @@
             selectedSize = sizes.length > 0 ? sizes[0] : '-';
 
             if (sizes.length > 0) {
-                sizes.forEach((sz, idx) => {
+                sizes.forEach((sz, i) => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.innerText = sz;
-                    btn.className = `px-3.5 py-1.5 text-xs font-bold rounded-xl border transition cursor-pointer ${idx === 0 ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-800 border-gray-300 hover:border-gray-500'}`;
+                    btn.className = `px-3.5 py-1.5 text-xs font-bold rounded-xl border transition cursor-pointer ${i === 0 ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-800 border-gray-300 hover:border-gray-500'}`;
                     btn.onclick = () => {
                         selectedSize = sz;
                         Array.from(sizeContainer.children).forEach(b => {
                             b.className = "px-3.5 py-1.5 text-xs font-bold rounded-xl border bg-white text-gray-800 border-gray-300 hover:border-gray-500 transition cursor-pointer";
                         });
                         btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-xl border bg-gray-900 text-white border-gray-900 transition cursor-pointer";
-                        updateWhatsAppLink(p, finalPrice);
+                        updateWhatsAppLink(p, finalPrice, generatedSku);
                     };
                     sizeContainer.appendChild(btn);
                 });
@@ -440,7 +439,7 @@
             condBadge.innerText = productCondition;
             condBadge.className = `absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider bg-gray-900 text-white shadow`;
 
-            updateWhatsAppLink(p, finalPrice);
+            updateWhatsAppLink(p, finalPrice, generatedSku);
 
             const modal = document.getElementById('productModal');
             modal.classList.remove('hidden');
@@ -451,40 +450,38 @@
             }, 10);
         }
 
-        function updateWhatsAppLink(p, finalPrice) {
+        function updateWhatsAppLink(p, finalPrice, generatedSku) {
             const waNumber = "6287783098165";
-            const activeImage = document.getElementById('modalImage').src;
-            
-            // Mendeteksi tipe interaksi WhatsApp dari data database produk (mendukung whatsappType atau wa_type)
             const waType = (p.whatsappType || p.wa_type || 'pesan').toLowerCase();
             
             const waBtn = document.getElementById('modalWaBtn');
-            const waBtnText = waBtn.querySelector('span');
+            const waBtnText = document.getElementById('modalWaBtnText');
 
             let message = "";
 
             if (waType.includes('tanya') || waType.includes('question')) {
-                // Tampilan dan Format untuk "Tanya-Tanya"
+                // TAMPILAN & PESAN UNTUK MODE "TANYA-TANYA" (TANPA DATA IMAGE BASE64)
                 waBtnText.innerText = "Tanya Sekarang via WhatsApp";
                 waBtn.className = "w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-sky-950/10 text-xs sm:text-sm";
                 
                 message = `Halo Diremar Casual, saya ingin bertanya mengenai produk ini:\n\n` +
                           `• Nama Produk: ${p.name || '-'}\n` +
-                          `• Harga: Rp ${finalPrice.toLocaleString('id-ID')}\n` +
-                          `• Ukuran yang Dilihat: ${selectedSize}\n` +
-                          `• Link Foto: ${activeImage}\n\n` +
+                          `• SKU: ${generatedSku}\n` +
+                          `• Kondisi: ${p.condition || 'New'}\n` +
+                          `• Size: ${selectedSize}\n` +
+                          `• Deskripsi: ${p.description || '-'}\n\n` +
                           `Mohon informasinya. Terima kasih!`;
             } else {
-                // Tampilan dan Format untuk "Pesan Sekarang"
+                // TAMPILAN & PESAN UNTUK MODE "PESAN SEKARANG" (TANPA DATA IMAGE BASE64)
                 waBtnText.innerText = "Pesan Sekarang via WhatsApp";
                 waBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/10 text-xs sm:text-sm";
                 
                 message = `Halo Diremar Casual, saya ingin memesan produk ini:\n\n` +
                           `• Nama Produk: ${p.name || '-'}\n` +
+                          `• SKU: ${generatedSku}\n` +
                           `• Harga: Rp ${finalPrice.toLocaleString('id-ID')}\n` +
                           `• Ukuran (Size): ${selectedSize}\n` +
-                          `• Kondisi: ${p.condition || 'New'}\n` +
-                          `• Link Foto: ${activeImage}\n\n` +
+                          `• Kondisi: ${p.condition || 'New'}\n\n` +
                           `Mohon infokan ketersediaannya. Terima kasih!`;
             }
             
