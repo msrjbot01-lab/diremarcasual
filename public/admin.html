@@ -145,7 +145,6 @@
 
                     <div class="flex gap-2">
                         <button type="submit" id="submit-btn" class="flex-grow bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Upload ke Website</button>
-                        <button type="button" id="cancel-edit-btn" onclick="cancelEdit()" class="hidden bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-bold hover:bg-gray-300 transition text-sm">Batal</button>
                     </div>
                 </form>
                 <p id="status-msg" class="text-center text-xs mt-3 font-medium"></p>
@@ -280,6 +279,105 @@
 
     </div>
 
+    <!-- MODAL POP-UP EDIT PRODUK (MENGAMBANG) -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200 overflow-hidden max-h-[90vh] flex flex-col">
+            
+            <!-- Modal Header -->
+            <div class="bg-black text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-base">Edit Produk / Inventaris</h3>
+                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-white font-bold text-lg px-2">&times;</button>
+            </div>
+
+            <!-- Modal Body (Form Edit) -->
+            <div class="p-6 overflow-y-auto space-y-4">
+                <form id="modal-product-form" class="space-y-4">
+                    <input type="hidden" id="modal-edit-id">
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Kode Produk (SKU)</label>
+                        <input type="text" id="modal-product-code" class="w-full border bg-gray-50 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none font-mono text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Nama Sneakers</label>
+                        <input type="text" id="modal-name" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Kondisi Produk</label>
+                            <select id="modal-condition" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
+                                <option value="New">New (Baru)</option>
+                                <option value="Preloved">Preloved (Bekas)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Harga Manual (Rp)</label>
+                            <input type="number" id="modal-price" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Diskon (%) - Opsional</label>
+                            <input type="number" id="modal-discount" value="0" min="0" max="100" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Tipe Tombol WhatsApp</label>
+                            <select id="modal-wa-type" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
+                                <option value="tanya">Tanya-Tanya Produk</option>
+                                <option value="pesan">Pesan Sekarang (Receipt)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- TABEL PILIHAN SIZE MODAL -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-2">Pilih Ukuran (Size Tersedia)</label>
+                        <div class="grid grid-cols-5 gap-2 bg-gray-50 p-3 rounded-lg border" id="modal-size-checkboxes">
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="36" class="rounded"> 36</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="37" class="rounded"> 37</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="38" class="rounded"> 38</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="39" class="rounded"> 39</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="40" class="rounded"> 40</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="41" class="rounded"> 41</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="42" class="rounded"> 42</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="43" class="rounded"> 43</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="45" class="rounded"> 45</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="modal-product-size" value="46" class="rounded"> 46</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Tambah / Ubah Foto Produk</label>
+                        <input type="file" id="modal-image-file" accept="image/*" multiple class="w-full border rounded-lg p-2 text-sm bg-gray-50 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white cursor-pointer">
+                    </div>
+
+                    <!-- CONTAINER FOTO MODAL -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Manajemen Foto & Pilih Foto Utama (Thumbnail)</label>
+                        <div id="modal-photo-manager-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-gray-50 p-3 rounded-lg border min-h-[90px] items-center">
+                            <span class="text-xs text-gray-400 col-span-full text-center">Belum ada foto.</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Deskripsi & Informasi Produk</label>
+                        <textarea id="modal-description" rows="3" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none"></textarea>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="submit" class="flex-grow bg-black text-white py-2.5 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Simpan Perubahan</button>
+                        <button type="button" onclick="closeEditModal()" class="bg-gray-200 text-gray-700 px-5 py-2.5 rounded-lg font-bold hover:bg-gray-300 transition text-sm">Batal</button>
+                    </div>
+                </form>
+                <p id="modal-status-msg" class="text-center text-xs mt-2 font-medium"></p>
+            </div>
+
+        </div>
+    </div>
+
     <script>
         const API_BASE = "https://round-surf-5635.trbmaster.workers.dev/api";
         const ADMIN_USER = "marie";
@@ -351,7 +449,7 @@
             }
         }
 
-        // --- MANAJEMEN PRODUK & MULTI FOTO ---
+        // --- MANAJEMEN PRODUK BARU (TAB 1) ---
         const inputCode = document.getElementById("product-code");
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
@@ -362,8 +460,8 @@
         const inputImageUrl = document.getElementById("image_url");
         const inputDescription = document.getElementById("description");
 
-        let currentUploadedImages = []; // Array menampung semua gambar produk saat ini
-        let thumbnailIndex = 0;        // Indeks gambar yang dipilih sebagai utama/thumbnail
+        let currentUploadedImages = [];
+        let thumbnailIndex = 0;
 
         inputImageFile.addEventListener("change", function(e) {
             const files = Array.from(e.target.files);
@@ -403,7 +501,7 @@
                         processedCount++;
 
                         if (processedCount === files.length) {
-                            inputImageFile.value = ""; // Reset input file
+                            inputImageFile.value = "";
                             refreshPhotoManager();
                         }
                     };
@@ -424,9 +522,7 @@
                 return;
             }
 
-            if (thumbnailIndex >= currentUploadedImages.length) {
-                thumbnailIndex = 0;
-            }
+            if (thumbnailIndex >= currentUploadedImages.length) thumbnailIndex = 0;
 
             currentUploadedImages.forEach((imgUrl, idx) => {
                 const isMain = idx === thumbnailIndex;
@@ -439,14 +535,13 @@
                         ${isMain ? '<span class="absolute top-1 left-1 bg-black text-white text-[9px] font-bold px-1.5 py-0.5 rounded">UTAMA</span>' : ''}
                     </div>
                     <div class="flex justify-between w-full text-[10px] gap-1">
-                        <button type="button" onclick="setThumbnail(${idx})" class="flex-grow py-0.5 px-1 rounded font-semibold ${isMain ? 'bg-black text-white cursor-default' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}">${isMain ? 'Thumbnail' : 'Jadikan Utama'}</button>
+                        <button type="button" onclick="setThumbnail(${idx})" class="flex-grow py-0.5 px-1 rounded font-semibold ${isMain ? 'bg-black text-white cursor-default' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}">${isMain ? 'Thumbnail' : 'Utama'}</button>
                         <button type="button" onclick="removePhoto(${idx})" class="bg-red-50 hover:bg-red-600 hover:text-white text-red-600 py-0.5 px-1.5 rounded font-bold">Hapus</button>
                     </div>
                 `;
                 container.appendChild(div);
             });
 
-            // Sinkronisasi live preview dengan foto utama yang sedang dipilih
             document.getElementById("prev-img").src = currentUploadedImages[thumbnailIndex];
             updatePreview();
         }
@@ -532,6 +627,77 @@
             cb.addEventListener("change", updatePreview);
         });
 
+        document.getElementById("product-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById("status-msg");
+
+            if (currentUploadedImages.length === 0) {
+                alert("Silakan pilih minimal 1 foto produk terlebih dahulu!");
+                return;
+            }
+
+            const selectedSizes = getSelectedSizes();
+            if (!selectedSizes) {
+                alert("Harap pilih setidaknya satu ukuran (size) pada tabel ukuran!");
+                return;
+            }
+
+            let finalImagesArray = [...currentUploadedImages];
+            if (thumbnailIndex > 0 && thumbnailIndex < finalImagesArray.length) {
+                const mainImg = finalImagesArray.splice(thumbnailIndex, 1)[0];
+                finalImagesArray.unshift(mainImg);
+            }
+
+            let productCode = inputCode.value.trim();
+            if (!productCode) {
+                const randomNum = Math.floor(100000 + Math.random() * 900000);
+                productCode = `${randomNum}_diremar`;
+            }
+
+            const productData = {
+                id: Date.now(),
+                code: productCode,
+                name: inputName.value,
+                condition: inputCondition.value,
+                price: parseFloat(inputPrice.value),
+                discount: parseFloat(inputDiscount.value) || 0,
+                size: selectedSizes,
+                wa_type: inputWaType.value,
+                image: finalImagesArray[0],
+                images: finalImagesArray,
+                description: inputDescription.value
+            };
+
+            msg.textContent = "Mengunggah data & foto ke server...";
+            msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
+
+            try {
+                const res = await fetch(`${API_BASE}/products`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(productData)
+                });
+                
+                if (res.ok) {
+                    msg.textContent = "Produk berhasil disimpan dan dipublikasikan!";
+                    msg.className = "text-center text-xs mt-3 font-medium text-green-600";
+                    document.getElementById("product-form").reset();
+                    currentUploadedImages = [];
+                    thumbnailIndex = 0;
+                    refreshPhotoManager();
+                    loadStockProducts();
+                } else {
+                    throw new Error("Gagal menyimpan ke server");
+                }
+            } catch (err) {
+                console.error("Error upload produk:", err);
+                msg.textContent = "Terjadi kesalahan saat meng-upload data.";
+                msg.className = "text-center text-xs mt-3 font-medium text-red-600";
+            }
+            setTimeout(() => { msg.textContent = ""; }, 3000);
+        });
+
+        // --- TAB 2: STOK & MODAL POP-UP EDIT ---
         async function loadStockProducts() {
             try {
                 const response = await fetch(`${API_BASE}/products`);
@@ -578,7 +744,7 @@
                             <td class="p-3 text-xs font-semibold text-gray-700">${p.size || '-'}</td>
                             <td class="p-3 text-xs"><span class="px-2 py-1 rounded font-semibold ${p.wa_type === 'pesan' ? 'bg-black text-white' : 'bg-green-100 text-green-800'}">${p.wa_type === 'pesan' ? 'Pesan Sekarang' : 'Tanya-Tanya'}</span></td>
                             <td class="p-3 text-center space-x-2">
-                                <button onclick="editProductFromEncoded('${encodedProd}')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
+                                <button onclick="openEditModalFromEncoded('${encodedProd}')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
                                 <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
                             </td>
                         </tr>
@@ -589,61 +755,190 @@
             }
         }
 
-        function editProductFromEncoded(encodedStr) {
+        let modalUploadedImages = [];
+        let modalThumbnailIndex = 0;
+
+        const modalImageFile = document.getElementById("modal-image-file");
+
+        modalImageFile.addEventListener("change", function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            if (modalUploadedImages.length + files.length > 5) {
+                alert("Maksimal total foto produk adalah 5 gambar!");
+                modalImageFile.value = "";
+                return;
+            }
+
+            let processedCount = 0;
+            files.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement("canvas");
+                        const MAX_WIDTH = 800; 
+                        const MAX_HEIGHT = 800;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                        } else {
+                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+                        modalUploadedImages.push(compressedDataUrl);
+                        processedCount++;
+
+                        if (processedCount === files.length) {
+                            modalImageFile.value = "";
+                            refreshModalPhotoManager();
+                        }
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function refreshModalPhotoManager() {
+            const container = document.getElementById("modal-photo-manager-container");
+            container.innerHTML = "";
+
+            if (modalUploadedImages.length === 0) {
+                container.innerHTML = `<span class="text-xs text-gray-400 col-span-full text-center">Belum ada foto.</span>`;
+                return;
+            }
+
+            if (modalThumbnailIndex >= modalUploadedImages.length) modalThumbnailIndex = 0;
+
+            modalUploadedImages.forEach((imgUrl, idx) => {
+                const isMain = idx === modalThumbnailIndex;
+                const div = document.createElement("div");
+                div.className = `relative border-2 rounded-lg p-1 bg-white flex flex-col items-center gap-1 ${isMain ? 'border-black ring-2 ring-black/20' : 'border-gray-200'}`;
+                
+                div.innerHTML = `
+                    <div class="w-full h-16 bg-gray-100 rounded overflow-hidden relative">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                        ${isMain ? '<span class="absolute top-1 left-1 bg-black text-white text-[9px] font-bold px-1.5 py-0.5 rounded">UTAMA</span>' : ''}
+                    </div>
+                    <div class="flex justify-between w-full text-[10px] gap-1">
+                        <button type="button" onclick="setModalThumbnail(${idx})" class="flex-grow py-0.5 px-1 rounded font-semibold ${isMain ? 'bg-black text-white cursor-default' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}">${isMain ? 'Thumbnail' : 'Utama'}</button>
+                        <button type="button" onclick="removeModalPhoto(${idx})" class="bg-red-50 hover:bg-red-600 hover:text-white text-red-600 py-0.5 px-1.5 rounded font-bold">Hapus</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function setModalThumbnail(idx) {
+            modalThumbnailIndex = idx;
+            refreshModalPhotoManager();
+        }
+
+        function removeModalPhoto(idx) {
+            modalUploadedImages.splice(idx, 1);
+            if (modalThumbnailIndex >= modalUploadedImages.length) {
+                modalThumbnailIndex = Math.max(0, modalUploadedImages.length - 1);
+            }
+            refreshModalPhotoManager();
+        }
+
+        function openEditModalFromEncoded(encodedStr) {
             try {
                 const p = JSON.parse(decodeURIComponent(encodedStr));
-                editProduct(p);
+                document.getElementById("modal-edit-id").value = p.id;
+                document.getElementById("modal-product-code").value = p.code || '';
+                document.getElementById("modal-name").value = p.name;
+                document.getElementById("modal-condition").value = p.condition;
+                document.getElementById("modal-price").value = p.price;
+                document.getElementById("modal-discount").value = p.discount || 0;
+                document.getElementById("modal-wa-type").value = p.wa_type || 'tanya';
+                document.getElementById("modal-description").value = p.description || '';
+
+                const productSizes = p.size ? p.size.split(", ").map(s => s.trim()) : [];
+                document.querySelectorAll('input[name="modal-product-size"]').forEach(cb => {
+                    cb.checked = productSizes.includes(cb.value);
+                });
+
+                if (Array.isArray(p.images) && p.images.length > 0) {
+                    modalUploadedImages = [...p.images];
+                } else if (typeof p.image === 'string' && p.image.startsWith('[')) {
+                    try { modalUploadedImages = JSON.parse(p.image); } catch(e) { modalUploadedImages = [p.image]; }
+                } else if (p.image) {
+                    modalUploadedImages = [p.image];
+                } else {
+                    modalUploadedImages = [];
+                }
+
+                modalThumbnailIndex = 0;
+                refreshModalPhotoManager();
+
+                document.getElementById("edit-modal").classList.remove("hidden");
             } catch (e) {
-                console.error("Gagal parse produk:", e);
+                console.error("Gagal membuka modal edit:", e);
             }
         }
 
-        document.getElementById("product-form").addEventListener("submit", async (e) => {
+        function closeEditModal() {
+            document.getElementById("edit-modal").classList.add("hidden");
+        }
+
+        document.getElementById("modal-product-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const msg = document.getElementById("status-msg");
-            const editId = document.getElementById("edit-id").value;
+            const msg = document.getElementById("modal-status-msg");
+            const editId = document.getElementById("modal-edit-id").value;
 
-            if (currentUploadedImages.length === 0) {
-                alert("Silakan pilih minimal 1 foto produk terlebih dahulu!");
+            if (modalUploadedImages.length === 0) {
+                alert("Silakan pilih minimal 1 foto produk!");
                 return;
             }
 
-            const selectedSizes = getSelectedSizes();
+            const checkboxes = document.querySelectorAll('input[name="modal-product-size"]:checked');
+            let sizes = [];
+            checkboxes.forEach(cb => sizes.push(cb.value));
+            const selectedSizes = sizes.join(", ");
+
             if (!selectedSizes) {
-                alert("Harap pilih setidaknya satu ukuran (size) pada tabel ukuran!");
+                alert("Harap pilih setidaknya satu ukuran (size)!");
                 return;
             }
 
-            // PERBAIKAN PENTING: Susun ulang array images agar posisi foto utama (thumbnailIndex) pindah ke index 0
-            let finalImagesArray = [...currentUploadedImages];
-            if (thumbnailIndex > 0 && thumbnailIndex < finalImagesArray.length) {
-                const mainImg = finalImagesArray.splice(thumbnailIndex, 1)[0];
+            let finalImagesArray = [...modalUploadedImages];
+            if (modalThumbnailIndex > 0 && modalThumbnailIndex < finalImagesArray.length) {
+                const mainImg = finalImagesArray.splice(modalThumbnailIndex, 1)[0];
                 finalImagesArray.unshift(mainImg);
             }
 
-            // Auto-generate kode produk jika kosong
-            let productCode = inputCode.value.trim();
+            let productCode = document.getElementById("modal-product-code").value.trim();
             if (!productCode) {
                 const randomNum = Math.floor(100000 + Math.random() * 900000);
                 productCode = `${randomNum}_diremar`;
             }
 
             const productData = {
-                id: editId ? parseInt(editId) : Date.now(),
+                id: parseInt(editId),
                 code: productCode,
-                name: inputName.value,
-                condition: inputCondition.value,
-                price: parseFloat(inputPrice.value),
-                discount: parseFloat(inputDiscount.value) || 0,
+                name: document.getElementById("modal-name").value,
+                condition: document.getElementById("modal-condition").value,
+                price: parseFloat(document.getElementById("modal-price").value),
+                discount: parseFloat(document.getElementById("modal-discount").value) || 0,
                 size: selectedSizes,
-                wa_type: inputWaType.value,
-                image: finalImagesArray[0],     // Foto utama dipastikan terikat di sini
-                images: finalImagesArray,      // Urutan array tersusun rapi
-                description: inputDescription.value
+                wa_type: document.getElementById("modal-wa-type").value,
+                image: finalImagesArray[0],
+                images: finalImagesArray,
+                description: document.getElementById("modal-description").value
             };
 
-            msg.textContent = "Mengunggah data & foto ke server...";
-            msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
+            msg.textContent = "Menyimpan perubahan...";
+            msg.className = "text-center text-xs mt-2 font-medium text-blue-600";
 
             try {
                 const res = await fetch(`${API_BASE}/products`, {
@@ -653,75 +948,22 @@
                 });
                 
                 if (res.ok) {
-                    msg.textContent = "Produk berhasil disimpan dan dipublikasikan!";
-                    msg.className = "text-center text-xs mt-3 font-medium text-green-600";
-                    
-                    cancelEdit();
-                    loadStockProducts();
+                    msg.textContent = "Perubahan berhasil disimpan!";
+                    msg.className = "text-center text-xs mt-2 font-medium text-green-600";
+                    setTimeout(() => {
+                        closeEditModal();
+                        loadStockProducts();
+                        msg.textContent = "";
+                    }, 1000);
                 } else {
-                    throw new Error("Gagal menyimpan ke server");
+                    throw new Error("Gagal menyimpan");
                 }
             } catch (err) {
-                console.error("Error upload produk:", err);
-                msg.textContent = "Terjadi kesalahan saat meng-upload data.";
-                msg.className = "text-center text-xs mt-3 font-medium text-red-600";
+                console.error("Error edit produk:", err);
+                msg.textContent = "Terjadi kesalahan saat menyimpan.";
+                msg.className = "text-center text-xs mt-2 font-medium text-red-600";
             }
-
-            setTimeout(() => { msg.textContent = ""; }, 3000);
         });
-
-        function editProduct(p) {
-            document.getElementById("edit-id").value = p.id;
-            inputCode.value = p.code || '';
-            inputName.value = p.name;
-            inputCondition.value = p.condition;
-            inputPrice.value = p.price;
-            inputDiscount.value = p.discount || 0;
-            inputWaType.value = p.wa_type || 'tanya';
-            inputDescription.value = p.description || '';
-
-            const productSizes = p.size ? p.size.split(", ").map(s => s.trim()) : [];
-            document.querySelectorAll('input[name="product-size"]').forEach(cb => {
-                cb.checked = productSizes.includes(cb.value);
-            });
-
-            // Muat keseluruhan gambar lama ke dalam photo manager
-            if (Array.isArray(p.images) && p.images.length > 0) {
-                currentUploadedImages = [...p.images];
-            } else if (typeof p.image === 'string' && p.image.startsWith('[')) {
-                try { currentUploadedImages = JSON.parse(p.image); } catch(e) { currentUploadedImages = [p.image]; }
-            } else if (p.image) {
-                currentUploadedImages = [p.image];
-            } else {
-                currentUploadedImages = [];
-            }
-            
-            thumbnailIndex = 0; // Karena index [0] selalu thumbnail utama di database
-            refreshPhotoManager();
-
-            document.getElementById("form-title").textContent = "Edit Produk / Inventaris";
-            document.getElementById("submit-btn").textContent = "Simpan Perubahan";
-            document.getElementById("cancel-edit-btn").classList.remove("hidden");
-            
-            switchTab('upload');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function cancelEdit() {
-            document.getElementById("product-form").reset();
-            document.getElementById("edit-id").value = "";
-            document.getElementById("image_url").value = "";
-            inputCode.value = "";
-            currentUploadedImages = [];
-            thumbnailIndex = 0;
-            refreshPhotoManager();
-            document.querySelectorAll('input[name="product-size"]').forEach(cb => cb.checked = false);
-            
-            document.getElementById("form-title").textContent = "Form Upload Produk Sneakers";
-            document.getElementById("submit-btn").textContent = "Upload ke Website";
-            document.getElementById("cancel-edit-btn").classList.add("hidden");
-            updatePreview();
-        }
 
         async function deleteProduct(id) {
             if (confirm("Apakah barang ini ingin dihapus permanen?")) {
