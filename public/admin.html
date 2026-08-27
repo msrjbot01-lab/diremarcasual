@@ -81,7 +81,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase mb-1">Harga Asli (Rp)</label>
+                            <label class="block text-xs font-semibold uppercase mb-1">Harga Manual (Rp)</label>
                             <input type="number" id="price" placeholder="450000" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                         </div>
                     </div>
@@ -92,8 +92,29 @@
                             <input type="number" id="discount" value="0" min="0" max="100" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase mb-1">Size / Ukuran Tersedia</label>
-                            <input type="text" id="sizes" placeholder="Contoh: 40, 41, 42, 43" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                            <label class="block text-xs font-semibold uppercase mb-1">Tipe Tombol WhatsApp</label>
+                            <select id="wa-type" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
+                                <option value="tanya">Tanya-Tanya Produk</option>
+                                <option value="pesan">Pesan Sekarang (Receipt)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- TABEL PILIHAN SIZE -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-2">Pilih Ukuran (Size Tersedia)</label>
+                        <div class="grid grid-cols-5 gap-2 bg-gray-50 p-3 rounded-lg border" id="size-checkboxes">
+                            <!-- Checkbox generated via JS -->
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="36" class="rounded"> 36</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="37" class="rounded"> 37</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="38" class="rounded"> 38</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="39" class="rounded"> 39</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="40" class="rounded"> 40</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="41" class="rounded"> 41</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="42" class="rounded"> 42</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="43" class="rounded"> 43</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="45" class="rounded"> 45</label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer"><input type="checkbox" name="product-size" value="46" class="rounded"> 46</label>
                         </div>
                     </div>
 
@@ -139,11 +160,17 @@
                         <div class="text-xs font-semibold text-gray-700 bg-gray-50 p-2 rounded">
                             Size: <span id="prev-sizes" class="font-normal text-gray-600">-</span>
                         </div>
+                        
+                        <div class="pt-2">
+                            <button type="button" id="prev-wa-btn" class="w-full bg-green-600 text-white py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5">
+                                Tanya-Tanya Produk
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="mt-4 p-3 bg-zinc-50 border rounded-lg text-xs space-y-1">
-                    <div class="flex justify-between"><span class="text-gray-500">Harga Asli:</span><span id="calc-orig" class="font-semibold">Rp 0</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Harga Manual:</span><span id="calc-orig" class="font-semibold">Rp 0</span></div>
                     <div class="flex justify-between"><span class="text-gray-500">Potongan Diskon:</span><span id="calc-disc" class="font-semibold text-red-600">Rp 0</span></div>
                     <div class="border-t pt-1 flex justify-between font-bold text-sm"><span>Total Harga Bersih:</span><span id="calc-total" class="text-green-600">Rp 0</span></div>
                 </div>
@@ -163,12 +190,13 @@
                             <th class="p-3">Produk</th>
                             <th class="p-3">Kondisi</th>
                             <th class="p-3">Harga & Diskon</th>
-                            <th class="p-3">Size</th>
+                            <th class="p-3">Size Tersedia</th>
+                            <th class="p-3">Tipe WA</th>
                             <th class="p-3 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="stock-product-list">
-                        <tr><td colspan="5" class="p-6 text-center text-gray-400">Memuat data...</td></tr>
+                        <tr><td colspan="6" class="p-6 text-center text-gray-400">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -177,34 +205,25 @@
         <!-- MENU 3: BANNER SETTINGS -->
         <div id="tab-banner" class="space-y-8 hidden">
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-3xl mx-auto">
-                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website (Desktop & Mobile)</h2>
-                <p class="text-xs text-gray-500 mb-6">Upload gambar terpisah untuk tampilan komputer/laptop dan HP dengan ukuran fix yang akurat.</p>
+                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website</h2>
+                <p class="text-xs text-gray-500 mb-6">Upload gambar terpisah untuk komputer dan HP.</p>
 
                 <form id="banner-form" class="space-y-5">
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Nama Banner / Keterangan</label>
-                        <input type="text" id="banner-name" placeholder="Contoh: Promo Lebaran / Flash Sale" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <input type="text" id="banner-name" placeholder="Contoh: Promo Lebaran" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
-                        <!-- Banner Desktop -->
                         <div>
                             <label class="block text-xs font-semibold uppercase mb-1 text-gray-700">Banner Desktop (PC/Laptop)</label>
                             <input type="file" id="banner-desktop-file" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-white file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-black file:text-white cursor-pointer">
                             <input type="hidden" id="banner-desktop-url">
-                            <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-800">
-                                📐 Ukuran Fix: <strong class="font-bold">1200 x 400 px</strong> (Rasio 3:1)
-                            </div>
                         </div>
-
-                        <!-- Banner Mobile -->
                         <div>
                             <label class="block text-xs font-semibold uppercase mb-1 text-gray-700">Banner Mobile (HP)</label>
                             <input type="file" id="banner-mobile-file" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-white file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-black file:text-white cursor-pointer">
                             <input type="hidden" id="banner-mobile-url">
-                            <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-800">
-                                📐 Ukuran Fix: <strong class="font-bold">600 x 400 px</strong> (Rasio 3:2)
-                            </div>
                         </div>
                     </div>
 
@@ -221,18 +240,15 @@
                 <p id="banner-status-msg" class="text-center text-xs mt-3 font-medium"></p>
             </div>
 
-            <!-- Daftar Banner Terpasang -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold mb-1">Daftar Banner Terpasang</h2>
-                <p class="text-xs text-gray-500 mb-6">Kelola status aktif/nonaktif atau hapus banner yang sudah ada.</p>
-
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto mt-4">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
-                                <th class="p-3">Preview Desktop (3:1)</th>
-                                <th class="p-3">Preview Mobile (3:2)</th>
-                                <th class="p-3">Nama Banner</th>
+                                <th class="p-3">Desktop</th>
+                                <th class="p-3">Mobile</th>
+                                <th class="p-3">Nama</th>
                                 <th class="p-3">Status</th>
                                 <th class="p-3 text-center">Aksi</th>
                             </tr>
@@ -318,12 +334,12 @@
             }
         }
 
-        // --- MANAJEMEN PRODUK & MULTI FOTO (MAKSIMAL 5) ---
+        // --- MANAJEMEN PRODUK & MULTI FOTO ---
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
         const inputPrice = document.getElementById("price");
         const inputDiscount = document.getElementById("discount");
-        const inputSizes = document.getElementById("sizes");
+        const inputWaType = document.getElementById("wa-type");
         const inputImageFile = document.getElementById("image-file");
         const inputImageUrl = document.getElementById("image_url");
         const inputDescription = document.getElementById("description");
@@ -353,15 +369,9 @@
                         let height = img.height;
 
                         if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
+                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                         } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
+                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
                         }
 
                         canvas.width = width;
@@ -385,12 +395,20 @@
             });
         });
 
+        function getSelectedSizes() {
+            const checkboxes = document.querySelectorAll('input[name="product-size"]:checked');
+            let sizes = [];
+            checkboxes.forEach(cb => sizes.push(cb.value));
+            return sizes.join(", ");
+        }
+
         function updatePreview() {
             const name = inputName.value || "Nama Sneakers";
             const condition = inputCondition.value;
             const price = parseFloat(inputPrice.value) || 0;
             const discount = parseFloat(inputDiscount.value) || 0;
-            const sizes = inputSizes.value || "-";
+            const waType = inputWaType.value;
+            const sizes = getSelectedSizes() || "-";
             const description = inputDescription.value || "Deskripsi produk...";
 
             let finalPrice = price;
@@ -422,14 +440,27 @@
                 document.getElementById("prev-discount-badge").classList.add("hidden");
             }
 
+            const waBtn = document.getElementById("prev-wa-btn");
+            if (waType === 'pesan') {
+                waBtn.textContent = "Pesan Sekarang";
+                waBtn.className = "w-full bg-black text-white py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-zinc-800 transition";
+            } else {
+                waBtn.textContent = "Tanya-Tanya Produk";
+                waBtn.className = "w-full bg-green-600 text-white py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-green-700 transition";
+            }
+
             document.getElementById("calc-orig").textContent = `Rp ${price.toLocaleString('id-ID')}`;
             document.getElementById("calc-disc").textContent = `- Rp ${discAmount.toLocaleString('id-ID')}`;
             document.getElementById("calc-total").textContent = `Rp ${finalPrice.toLocaleString('id-ID')}`;
         }
 
-        [inputName, inputCondition, inputPrice, inputDiscount, inputSizes, inputDescription].forEach(el => {
+        [inputName, inputCondition, inputPrice, inputDiscount, inputWaType, inputDescription].forEach(el => {
             el.addEventListener("input", updatePreview);
             el.addEventListener("change", updatePreview);
+        });
+
+        document.querySelectorAll('input[name="product-size"]').forEach(cb => {
+            cb.addEventListener("change", updatePreview);
         });
 
         async function loadStockProducts() {
@@ -440,7 +471,7 @@
                 document.getElementById("stock-count").textContent = products.length || 0;
 
                 if (!products || products.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada barang di menu stok.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">Belum ada barang di menu stok. Silakan upload produk baru.</td></tr>`;
                     return;
                 }
 
@@ -459,7 +490,6 @@
                         } catch(e) {}
                     }
 
-                    // Amankan data JSON dari masalah karakter kutip satu (') menggunakan encodeURIComponent
                     const encodedProd = encodeURIComponent(JSON.stringify(p));
 
                     tbody.innerHTML += `
@@ -476,7 +506,8 @@
                                 <p class="font-bold">Rp ${finalPrice.toLocaleString('id-ID')}</p>
                                 ${p.discount > 0 ? `<span class="text-xs text-gray-400 line-through">Rp ${p.price.toLocaleString('id-ID')}</span> <span class="text-xs text-red-600 font-semibold">(${p.discount}%)</span>` : ''}
                             </td>
-                            <td class="p-3 text-xs font-semibold text-gray-700">Size: ${p.size}</td>
+                            <td class="p-3 text-xs font-semibold text-gray-700">${p.size || '-'}</td>
+                            <td class="p-3 text-xs"><span class="px-2 py-1 rounded font-semibold ${p.wa_type === 'pesan' ? 'bg-black text-white' : 'bg-green-100 text-green-800'}">${p.wa_type === 'pesan' ? 'Pesan Sekarang' : 'Tanya-Tanya'}</span></td>
                             <td class="p-3 text-center space-x-2">
                                 <button onclick="editProductFromEncoded('${encodedProd}')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
                                 <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
@@ -489,7 +520,6 @@
             }
         }
 
-        // Fungsi pembantu untuk decode data produk yang aman
         function editProductFromEncoded(encodedStr) {
             try {
                 const p = JSON.parse(decodeURIComponent(encodedStr));
@@ -520,19 +550,24 @@
                 }
             }
 
+            const selectedSizes = getSelectedSizes();
+            if (!selectedSizes) {
+                alert("Harap pilih setidaknya satu ukuran (size) pada tabel ukuran!");
+                return;
+            }
+
             const productData = {
                 id: editId ? parseInt(editId) : Date.now(),
                 name: inputName.value,
                 condition: inputCondition.value,
                 price: parseFloat(inputPrice.value),
                 discount: parseFloat(inputDiscount.value) || 0,
-                size: inputSizes.value,
-                image: finalImages_length_check = finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src,
+                size: selectedSizes,
+                wa_type: inputWaType.value,
+                image: finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src,
                 images: finalImagesArr.length > 0 ? finalImagesArr : [document.getElementById("prev-img").src],
                 description: inputDescription.value
             };
-            // Perbaikan minor variabel penampung image
-            productData.image = finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src;
 
             msg.textContent = "Mengunggah data & foto ke server...";
             msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
@@ -545,12 +580,13 @@
                 });
                 
                 if (res.ok) {
-                    msg.textContent = "Produk berhasil disimpan!";
+                    msg.textContent = "Produk berhasil disimpan dan dipublikasikan!";
                     msg.className = "text-center text-xs mt-3 font-medium text-green-600";
                     
                     document.getElementById("product-form").reset();
                     document.getElementById("edit-id").value = "";
                     document.getElementById("image_url").value = "";
+                    document.querySelectorAll('input[name="product-size"]').forEach(cb => cb.checked = false);
                     document.getElementById("submit-btn").textContent = "Upload ke Website";
                     updatePreview();
                     loadStockProducts();
@@ -571,8 +607,14 @@
             inputCondition.value = p.condition;
             inputPrice.value = p.price;
             inputDiscount.value = p.discount || 0;
-            inputSizes.value = p.size;
+            inputWaType.value = p.wa_type || 'tanya';
             inputDescription.value = p.description || '';
+
+            // Centang ulang checkbox size sesuai data produk
+            const productSizes = p.size ? p.size.split(", ").map(s => s.trim()) : [];
+            document.querySelectorAll('input[name="product-size"]').forEach(cb => {
+                cb.checked = productSizes.includes(cb.value);
+            });
 
             let targetImg = p.image;
             if (Array.isArray(p.images) && p.images.length > 0) {
@@ -676,32 +718,18 @@
                 }
 
                 tbody.innerHTML = "";
-                list.forEach((b) => {
+                list.layers = list.forEach((b) => {
                     const desktopImg = b.desktop_url || b.image || "logo01.webp";
                     const mobileImg = b.mobile_url || b.image || "logo01.webp";
                     const bannerTitle = b.name || b.title || 'Banner';
                     
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-gray-50 transition">
-                            <td class="p-3 w-36">
-                                <div class="w-32 h-[42px] bg-gray-100 rounded overflow-hidden border">
-                                    <img src="${desktopImg}" class="w-full h-full object-cover" alt="Desktop Banner">
-                                </div>
-                            </td>
-                            <td class="p-3 w-32">
-                                <div class="w-20 h-[42px] bg-gray-100 rounded overflow-hidden border">
-                                    <img src="${mobileImg}" class="w-full h-full object-cover" alt="Mobile Banner">
-                                </div>
-                            </td>
+                            <td class="p-3 w-36"><img src="${desktopImg}" class="w-24 h-8 object-cover rounded border" alt="Desktop"></td>
+                            <td class="p-3 w-32"><img src="${mobileImg}" class="w-16 h-8 object-cover rounded border" alt="Mobile"></td>
                             <td class="p-3 font-bold text-gray-900">${bannerTitle}</td>
-                            <td class="p-3">
-                                <span class="px-2 py-1 text-xs rounded font-semibold ${b.status === 'inactive' ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-800'}">
-                                    ${b.status === 'inactive' ? 'Nonaktif' : 'Aktif'}
-                                </span>
-                            </td>
-                            <td class="p-3 text-center space-x-2">
-                                <button onclick="deleteBanner(${b.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
-                            </td>
+                            <td class="p-3"><span class="px-2 py-1 text-xs rounded font-semibold ${b.status === 'inactive' ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-800'}">${b.status === 'inactive' ? 'Nonaktif' : 'Aktif'}</span></td>
+                            <td class="p-3 text-center"><button onclick="deleteBanner(${b.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button></td>
                         </tr>
                     `;
                 });
@@ -719,7 +747,7 @@
             const msg = document.getElementById("banner-status-msg");
 
             if (!desktopUrl || !mobileUrl) {
-                alert("Harap tunggu beberapa detik hingga proses konversi gambar Desktop dan Mobile selesai dimuat!");
+                alert("Harap tunggu beberapa detik hingga gambar banner selesai dimuat!");
                 return;
             }
 
@@ -746,21 +774,17 @@
                 if (res.ok) {
                     msg.textContent = "Banner berhasil ditambahkan!";
                     msg.className = "text-center text-xs mt-3 font-medium text-green-600";
-                    
                     document.getElementById("banner-form").reset();
                     bannerDesktopUrlInput.value = "";
                     bannerMobileUrlInput.value = "";
                     loadBanners();
                 } else {
-                    const errRes = await res.text();
-                    throw new Error(errRes || "Gagal menyimpan banner");
+                    throw new Error("Gagal menyimpan banner");
                 }
             } catch (err) {
-                console.error(err);
                 msg.textContent = "Terjadi kesalahan saat menyimpan banner.";
                 msg.className = "text-center text-xs mt-3 font-medium text-red-600";
             }
-
             setTimeout(() => { msg.textContent = ""; }, 3000);
         });
 
