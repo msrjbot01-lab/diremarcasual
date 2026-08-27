@@ -67,6 +67,13 @@
                     <input type="hidden" id="edit-id">
                     <input type="hidden" id="image_url">
 
+                    <!-- KODE PRODUK AUTO / MANUAL -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase mb-1">Kode Produk (SKU)</label>
+                        <input type="text" id="product-code" placeholder="Otomatis ter-generate atau isi manual" class="w-full border bg-gray-50 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none font-mono text-xs">
+                        <p class="text-[10px] text-gray-400 mt-0.5">Dibuat otomatis oleh sistem jika dikosongkan.</p>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-1">Nama Sneakers</label>
                         <input type="text" id="name" placeholder="Contoh: Nike Air Force 1" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
@@ -345,6 +352,7 @@
         }
 
         // --- MANAJEMEN PRODUK & MULTI FOTO ---
+        const inputCode = document.getElementById("product-code");
         const inputName = document.getElementById("name");
         const inputCondition = document.getElementById("condition");
         const inputPrice = document.getElementById("price");
@@ -416,7 +424,6 @@
                 return;
             }
 
-            // Pastikan thumbnailIndex valid
             if (thumbnailIndex >= currentUploadedImages.length) {
                 thumbnailIndex = 0;
             }
@@ -439,16 +446,8 @@
                 container.appendChild(div);
             });
 
-            // Susun ulang array agar foto utama berada di posisi pertama (index 0) untuk kompatibilitas frontend toko
-            let rearranged = [...currentUploadedImages];
-            if (thumbnailIndex > 0) {
-                const mainImg = rearranged.splice(thumbnailIndex, 1)[0];
-                rearranged.unshift(mainImg);
-                thumbnailIndex = 0; // setelah di-unshift, posisi utama jadi 0
-            }
-
-            inputImageUrl.value = JSON.stringify(rearranged);
-            document.getElementById("prev-img").src = rearranged[0];
+            // Sinkronisasi live preview dengan foto utama yang sedang dipilih
+            document.getElementById("prev-img").src = currentUploadedImages[thumbnailIndex];
             updatePreview();
         }
 
@@ -568,7 +567,7 @@
                                 <img src="${displayImg}" class="w-12 h-12 object-cover rounded bg-gray-200" alt="img">
                                 <div>
                                     <p class="font-bold text-gray-900">${p.name}</p>
-                                    <p class="text-xs text-gray-500 line-clamp-1">Kode: ${p.code || '-'} | ${p.description || '-'}</p>
+                                    <p class="text-xs text-gray-500 line-clamp-1">Kode: <span class="font-mono text-black">${p.code || '-'}</span> | ${p.description || '-'}</p>
                                 </div>
                             </td>
                             <td class="p-3"><span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${p.condition}</span></td>
@@ -615,9 +614,16 @@
                 return;
             }
 
-            // Generate kode produk otomatis jika produk baru (_diremar di akhir)
-            let productCode = editId ? document.getElementById("edit-code")?.value : "";
-            if (!editId || !productCode) {
+            // PERBAIKAN PENTING: Susun ulang array images agar posisi foto utama (thumbnailIndex) pindah ke index 0
+            let finalImagesArray = [...currentUploadedImages];
+            if (thumbnailIndex > 0 && thumbnailIndex < finalImagesArray.length) {
+                const mainImg = finalImagesArray.splice(thumbnailIndex, 1)[0];
+                finalImagesArray.unshift(mainImg);
+            }
+
+            // Auto-generate kode produk jika kosong
+            let productCode = inputCode.value.trim();
+            if (!productCode) {
                 const randomNum = Math.floor(100000 + Math.random() * 900000);
                 productCode = `${randomNum}_diremar`;
             }
@@ -631,8 +637,8 @@
                 discount: parseFloat(inputDiscount.value) || 0,
                 size: selectedSizes,
                 wa_type: inputWaType.value,
-                image: currentUploadedImages[0],
-                images: currentUploadedImages,
+                image: finalImagesArray[0],     // Foto utama dipastikan terikat di sini
+                images: finalImagesArray,      // Urutan array tersusun rapi
                 description: inputDescription.value
             };
 
@@ -666,17 +672,7 @@
 
         function editProduct(p) {
             document.getElementById("edit-id").value = p.id;
-            
-            // Simpan kode tersembunyi untuk mempertahankan kode lama saat edit
-            let codeInput = document.getElementById("edit-code");
-            if (!codeInput) {
-                codeInput = document.createElement("input");
-                codeInput.type = "hidden";
-                codeInput.id = "edit-code";
-                document.getElementById("product-form").appendChild(codeInput);
-            }
-            codeInput.value = p.code || '';
-
+            inputCode.value = p.code || '';
             inputName.value = p.name;
             inputCondition.value = p.condition;
             inputPrice.value = p.price;
@@ -692,19 +688,21 @@
             // Muat keseluruhan gambar lama ke dalam photo manager
             if (Array.isArray(p.images) && p.images.length > 0) {
                 currentUploadedImages = [...p.images];
+            } else if (typeof p.image === 'string' && p.image.startsWith('[')) {
+                try { currentUploadedImages = JSON.parse(p.image); } catch(e) { currentUploadedImages = [p.image]; }
             } else if (p.image) {
                 currentUploadedImages = [p.image];
             } else {
                 currentUploadedImages = [];
             }
-            thumbnailIndex = 0;
+            
+            thumbnailIndex = 0; // Karena index [0] selalu thumbnail utama di database
             refreshPhotoManager();
 
             document.getElementById("form-title").textContent = "Edit Produk / Inventaris";
             document.getElementById("submit-btn").textContent = "Simpan Perubahan";
             document.getElementById("cancel-edit-btn").classList.remove("hidden");
             
-            // Edit langsung di tempat (tetap di tab upload/edit form tanpa pindah menu utama, tapi scroll ke atas form)
             switchTab('upload');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -713,6 +711,7 @@
             document.getElementById("product-form").reset();
             document.getElementById("edit-id").value = "";
             document.getElementById("image_url").value = "";
+            inputCode.value = "";
             currentUploadedImages = [];
             thumbnailIndex = 0;
             refreshPhotoManager();
