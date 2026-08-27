@@ -373,11 +373,8 @@
                         base64Images.push(compressedDataUrl);
                         processedCount++;
 
-                        // Jika semua file sudah selesai dikompres
                         if (processedCount === files.length) {
-                            // Simpan array gambar ke hidden input (atau simpan gabungan string jika dibutuhkan)
                             inputImageUrl.value = JSON.stringify(base64Images);
-                            // Set gambar pertama sebagai preview utama
                             document.getElementById("prev-img").src = base64Images[0];
                             updatePreview();
                         }
@@ -452,7 +449,6 @@
                     let badgeColor = p.condition === "New" ? "bg-black text-white" : "bg-amber-100 text-amber-800";
                     let finalPrice = p.price - ((p.price * (p.discount || 0)) / 100);
                     
-                    // Mendukung produk dengan single image (string) maupun multi images (array)
                     let displayImg = p.image;
                     if (Array.isArray(p.images) && p.images.length > 0) {
                         displayImg = p.images[0];
@@ -462,6 +458,9 @@
                             if (Array.isArray(parsed) && parsed.length > 0) displayImg = parsed[0];
                         } catch(e) {}
                     }
+
+                    // Amankan data JSON dari masalah karakter kutip satu (') menggunakan encodeURIComponent
+                    const encodedProd = encodeURIComponent(JSON.stringify(p));
 
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-gray-50 transition">
@@ -479,7 +478,7 @@
                             </td>
                             <td class="p-3 text-xs font-semibold text-gray-700">Size: ${p.size}</td>
                             <td class="p-3 text-center space-x-2">
-                                <button onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
+                                <button onclick="editProductFromEncoded('${encodedProd}')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Edit</button>
                                 <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
                             </td>
                         </tr>
@@ -487,6 +486,16 @@
                 });
             } catch (err) {
                 console.error("Gagal memuat produk:", err);
+            }
+        }
+
+        // Fungsi pembantu untuk decode data produk yang aman
+        function editProductFromEncoded(encodedStr) {
+            try {
+                const p = JSON.parse(decodeURIComponent(encodedStr));
+                editProduct(p);
+            } catch (e) {
+                console.error("Gagal parse produk:", e);
             }
         }
 
@@ -518,10 +527,12 @@
                 price: parseFloat(inputPrice.value),
                 discount: parseFloat(inputDiscount.value) || 0,
                 size: inputSizes.value,
-                image: finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src,
-                images: finalImagesArr.length > 0 ? finalImagesArr : [document.getElementById("prev-img"].src],
+                image: finalImages_length_check = finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src,
+                images: finalImagesArr.length > 0 ? finalImagesArr : [document.getElementById("prev-img").src],
                 description: inputDescription.value
             };
+            // Perbaikan minor variabel penampung image
+            productData.image = finalImagesArr.length > 0 ? finalImagesArr[0] : document.getElementById("prev-img").src;
 
             msg.textContent = "Mengunggah data & foto ke server...";
             msg.className = "text-center text-xs mt-3 font-medium text-blue-600";
