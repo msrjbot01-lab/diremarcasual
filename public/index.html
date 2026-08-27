@@ -208,7 +208,6 @@
             let dotsHtml = '';
 
             activeBanners.forEach((banner, idx) => {
-                // Menyesuaikan dengan struktur banner panel (mendukung desktop_url atau image)
                 const imageUrl = banner.desktop_url || banner.image || "logo01.webp";
                 const bannerTitle = banner.title || banner.name || 'Banner';
                 
@@ -302,7 +301,6 @@
                 const discount = parseFloat(p.discount) || 0;
                 const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
                 
-                // Sinkronisasi pengambilan gambar dari database panel (array, JSON string, atau string biasa)
                 let displayImage = 'logo01.webp';
                 if (Array.isArray(p.images) && p.images.length > 0) {
                     displayImage = p.images[0];
@@ -354,7 +352,6 @@
             const discount = parseFloat(p.discount) || 0;
             const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
             
-            // Sinkronisasi gambar modal (mendukung berbagai format penyimpanan dari panel)
             if (Array.isArray(p.images) && p.images.length > 0) {
                 currentImages = p.images;
             } else if (typeof p.images === 'string' && p.images.trim() !== '') {
@@ -387,7 +384,6 @@
 
             document.getElementById('modalDesc').innerText = p.description || 'Tidak ada deskripsi.';
             
-            // Render Thumbnail Galeri Multi-Foto
             const galleryContainer = document.getElementById('modalGallery');
             galleryContainer.innerHTML = '';
             if (currentImages.length > 1) {
@@ -407,7 +403,6 @@
                 galleryContainer.classList.add('hidden');
             }
 
-            // Render Pilihan Ukuran (Size Picker) yang sinkron dengan panel
             const sizeContainer = document.getElementById('modalSizeContainer');
             sizeContainer.innerHTML = '';
             let sizes = [];
@@ -460,15 +455,40 @@
             const waNumber = "6287783098165";
             const activeImage = document.getElementById('modalImage').src;
             
-            const message = `Halo Diremar Casual, saya tertarik dengan produk ini:\n\n` +
-                            `• Nama Produk: ${p.name || '-'}\n` +
-                            `• Harga: Rp ${finalPrice.toLocaleString('id-ID')}\n` +
-                            `• Ukuran (Size): ${selectedSize}\n` +
-                            `• Kondisi: ${p.condition || 'New'}\n` +
-                            `• Link Foto: ${activeImage}\n\n` +
-                            `Mohon infokan ketersediaannya. Terima kasih!`;
+            // Mendeteksi tipe interaksi WhatsApp dari data database produk (mendukung whatsappType atau wa_type)
+            const waType = (p.whatsappType || p.wa_type || 'pesan').toLowerCase();
             
-            document.getElementById('modalWaBtn').href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            const waBtn = document.getElementById('modalWaBtn');
+            const waBtnText = waBtn.querySelector('span');
+
+            let message = "";
+
+            if (waType.includes('tanya') || waType.includes('question')) {
+                // Tampilan dan Format untuk "Tanya-Tanya"
+                waBtnText.innerText = "Tanya Sekarang via WhatsApp";
+                waBtn.className = "w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-sky-950/10 text-xs sm:text-sm";
+                
+                message = `Halo Diremar Casual, saya ingin bertanya mengenai produk ini:\n\n` +
+                          `• Nama Produk: ${p.name || '-'}\n` +
+                          `• Harga: Rp ${finalPrice.toLocaleString('id-ID')}\n` +
+                          `• Ukuran yang Dilihat: ${selectedSize}\n` +
+                          `• Link Foto: ${activeImage}\n\n` +
+                          `Mohon informasinya. Terima kasih!`;
+            } else {
+                // Tampilan dan Format untuk "Pesan Sekarang"
+                waBtnText.innerText = "Pesan Sekarang via WhatsApp";
+                waBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/10 text-xs sm:text-sm";
+                
+                message = `Halo Diremar Casual, saya ingin memesan produk ini:\n\n` +
+                          `• Nama Produk: ${p.name || '-'}\n` +
+                          `• Harga: Rp ${finalPrice.toLocaleString('id-ID')}\n` +
+                          `• Ukuran (Size): ${selectedSize}\n` +
+                          `• Kondisi: ${p.condition || 'New'}\n` +
+                          `• Link Foto: ${activeImage}\n\n` +
+                          `Mohon infokan ketersediaannya. Terima kasih!`;
+            }
+            
+            waBtn.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
         }
 
         function closeModal() {
