@@ -620,6 +620,7 @@
                 list.forEach((b) => {
                     const desktopImg = b.desktop_url || b.image || "logo01.webp";
                     const mobileImg = b.mobile_url || b.image || "logo01.webp";
+                    const bannerTitle = b.name || b.title || 'Banner';
                     
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-gray-50 transition">
@@ -633,7 +634,7 @@
                                     <img src="${mobileImg}" class="w-full h-full object-cover" alt="Mobile Banner">
                                 </div>
                             </td>
-                            <td class="p-3 font-bold text-gray-900">${b.name || b.title || 'Banner'}</td>
+                            <td class="p-3 font-bold text-gray-900">${bannerTitle}</td>
                             <td class="p-3">
                                 <span class="px-2 py-1 text-xs rounded font-semibold ${b.status === 'inactive' ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-800'}">
                                     ${b.status === 'inactive' ? 'Nonaktif' : 'Aktif'}
@@ -659,13 +660,15 @@
             const msg = document.getElementById("banner-status-msg");
 
             if (!desktopUrl || !mobileUrl) {
-                alert("Harap tunggu hingga proses gambar Desktop dan Mobile selesai dimuat!");
+                alert("Harap tunggu beberapa detik hingga proses konversi gambar Desktop dan Mobile selesai dimuat!");
                 return;
             }
 
+            // Memastikan kedua format properti (name & title) dikirim agar sinkron dengan berbagai script index.html
             const bannerData = {
                 id: Date.now(),
                 name: name,
+                title: name,
                 desktop_url: desktopUrl,
                 mobile_url: mobileUrl,
                 image: desktopUrl,
@@ -691,9 +694,11 @@
                     bannerMobileUrlInput.value = "";
                     loadBanners();
                 } else {
-                    throw new Error("Gagal menyimpan banner");
+                    const errRes = await res.text();
+                    throw new Error(errRes || "Gagal menyimpan banner");
                 }
             } catch (err) {
+                console.error(err);
                 msg.textContent = "Terjadi kesalahan saat menyimpan banner.";
                 msg.className = "text-center text-xs mt-3 font-medium text-red-600";
             }
