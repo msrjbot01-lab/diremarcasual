@@ -11,6 +11,14 @@
     <link rel="apple-touch-icon" href="favicon.webp">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Clean Minimalist Custom Styling */
+        .clean-panel-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
 
@@ -220,57 +228,64 @@
 
         <!-- MENU 3: BANNER SETTINGS -->
         <div id="tab-banner" class="space-y-8 hidden">
-            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200 max-w-3xl mx-auto">
-                <h2 class="text-xl font-bold mb-1">Pengaturan Banner Website</h2>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 max-w-3xl mx-auto">
+                <h2 class="text-xl font-bold mb-1 text-gray-900">Pengaturan Banner Website</h2>
                 <p class="text-xs text-gray-500 mb-6">Upload gambar terpisah untuk komputer dan HP.</p>
 
                 <form id="banner-form" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Nama Banner / Keterangan</label>
-                        <input type="text" id="banner-name" placeholder="Contoh: Promo Lebaran" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <label class="block text-xs font-semibold uppercase tracking-wider mb-1 text-gray-700">Nama Banner / Keterangan</label>
+                        <input type="text" id="banner-name" placeholder="Contoh: Promo Lebaran" required class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-black outline-none transition">
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-5 rounded-2xl border border-gray-200">
                         <div>
-                            <label class="block text-xs font-semibold uppercase mb-1 text-gray-700">Banner Desktop (PC/Laptop)</label>
-                            <input type="file" id="banner-desktop-file" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-white file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-black file:text-white cursor-pointer">
+                            <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-gray-700">Banner Desktop (PC/Laptop)</label>
+                            <input type="file" id="banner-desktop-file" accept="image/*" required class="w-full border border-gray-300 rounded-xl p-2 text-xs bg-white file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white cursor-pointer">
                             <input type="hidden" id="banner-desktop-url">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase mb-1 text-gray-700">Banner Mobile (HP)</label>
-                            <input type="file" id="banner-mobile-file" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-white file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-black file:text-white cursor-pointer">
+                            <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-gray-700">Banner Mobile (HP)</label>
+                            <input type="file" id="banner-mobile-file" accept="image/*" required class="w-full border border-gray-300 rounded-xl p-2 text-xs bg-white file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white cursor-pointer">
                             <input type="hidden" id="banner-mobile-url">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold uppercase mb-1">Status Banner</label>
-                        <select id="banner-status" class="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-black outline-none">
+                        <label class="block text-xs font-semibold uppercase tracking-wider mb-1 text-gray-700">Status Banner Awal</label>
+                        <select id="banner-status" class="w-full border border-gray-300 rounded-xl p-3 text-sm bg-white focus:ring-2 focus:ring-black outline-none transition">
                             <option value="active">Aktif (Tampil di Website)</option>
                             <option value="inactive">Nonaktif (Disembunyikan)</option>
                         </select>
                     </div>
 
-                    <button type="submit" id="banner-submit-btn" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-zinc-800 transition text-sm shadow">Simpan & Tambah Banner</button>
+                    <button type="submit" id="banner-submit-btn" class="w-full bg-black text-white py-3.5 rounded-xl font-bold hover:bg-zinc-800 transition text-sm shadow-sm">Simpan & Tambah Banner</button>
                 </form>
                 <p id="banner-status-msg" class="text-center text-xs mt-3 font-medium"></p>
             </div>
 
-            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
-                <h2 class="text-xl font-bold mb-1">Daftar Banner Terpasang</h2>
-                <div class="overflow-x-auto mt-4">
+            <!-- Tabel Daftar Banner dengan Gaya Clean Minimalist -->
+            <div class="clean-panel-card p-6 md:p-8 rounded-2xl">
+                <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">Daftar Banner Terpasang</h2>
+                        <p class="text-xs text-gray-500 mt-0.5">Aktifkan atau nonaktifkan banner langsung dari panel.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
-                                <th class="p-3">Desktop</th>
-                                <th class="p-3">Mobile</th>
-                                <th class="p-3">Nama</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3 text-center">Aksi</th>
+                            <tr class="bg-gray-50/80 border-b border-gray-200 text-gray-600 text-xs uppercase tracking-wider">
+                                <th class="p-3.5 rounded-l-xl">Desktop</th>
+                                <th class="p-3.5">Mobile</th>
+                                <th class="p-3.5">Nama</th>
+                                <th class="p-3.5">Status Switch</th>
+                                <th class="p-3.5 text-center rounded-r-xl">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="banner-list">
-                            <tr><td colspan="5" class="p-6 text-center text-gray-400">Belum ada banner terpasang.</td></tr>
+                        <tbody id="banner-list" class="divide-y divide-gray-100">
+                            <tr><td colspan="5" class="p-6 text-center text-gray-400">Memuat data banner...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1056,19 +1071,59 @@
                     const desktopImg = b.desktop_url || b.image || "logo01.webp";
                     const mobileImg = b.mobile_url || b.image || "logo01.webp";
                     const bannerTitle = b.name || b.title || 'Banner';
+                    const isActive = b.status === 'active' || b.status === undefined;
                     
                     tbody.innerHTML += `
-                        <tr class="border-b hover:bg-gray-50 transition">
-                            <td class="p-3 w-36"><img src="${desktopImg}" class="w-24 h-8 object-cover rounded border" alt="Desktop"></td>
-                            <td class="p-3 w-32"><img src="${mobileImg}" class="w-16 h-8 object-cover rounded border" alt="Mobile"></td>
-                            <td class="p-3 font-bold text-gray-900">${bannerTitle}</td>
-                            <td class="p-3"><span class="px-2 py-1 text-xs rounded font-semibold ${b.status === 'inactive' ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-800'}">${b.status === 'inactive' ? 'Nonaktif' : 'Aktif'}</span></td>
-                            <td class="p-3 text-center"><button onclick="deleteBanner(${b.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button></td>
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="p-3.5 w-36">
+                                <img src="${desktopImg}" class="w-24 h-9 object-cover rounded-lg border border-gray-200 shadow-sm" alt="Desktop">
+                            </td>
+                            <td class="p-3.5 w-32">
+                                <img src="${mobileImg}" class="w-16 h-9 object-cover rounded-lg border border-gray-200 shadow-sm" alt="Mobile">
+                            </td>
+                            <td class="p-3.5 font-bold text-gray-900">${bannerTitle}</td>
+                            <td class="p-3.5">
+                                <!-- Clean Modern Toggle Switch -->
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" ${isActive ? 'checked' : ''} onchange="toggleBannerStatus(${b.id}, this.checked)">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black shadow-inner"></div>
+                                    <span class="ml-3 text-xs font-semibold ${isActive ? 'text-gray-900' : 'text-gray-400'} transition-colors" id="status-text-${b.id}">
+                                        ${isActive ? 'Aktif' : 'Nonaktif'}
+                                    </span>
+                                </label>
+                            </td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="deleteBanner(${b.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition">Hapus</button>
+                            </td>
                         </tr>
                     `;
                 });
             } catch (err) {
                 console.error("Gagal memuat banner:", err);
+            }
+        }
+
+        // Fungsi untuk switch status aktif/nonaktif tanpa reload halaman
+        async function toggleBannerStatus(id, isChecked) {
+            const newStatus = isChecked ? 'active' : 'inactive';
+            const statusTextEl = document.getElementById(`status-text-${id}`);
+            
+            if (isChecked) {
+                statusTextEl.textContent = "Aktif";
+                statusTextEl.className = "ml-3 text-xs font-semibold text-gray-900 transition-colors";
+            } else {
+                statusTextEl.textContent = "Nonaktif";
+                statusTextEl.className = "ml-3 text-xs font-semibold text-gray-400 transition-colors";
+            }
+
+            try {
+                await fetch(`${API_BASE}/banners/${id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: newStatus })
+                });
+            } catch (err) {
+                console.error("Gagal memperbarui status banner:", err);
             }
         }
 
