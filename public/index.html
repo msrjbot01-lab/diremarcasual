@@ -208,7 +208,8 @@
             let dotsHtml = '';
 
             activeBanners.forEach((banner, idx) => {
-                const imageUrl = banner.image || banner.desktop_url || "logo01.webp";
+                // Menyesuaikan dengan struktur banner panel (mendukung desktop_url atau image)
+                const imageUrl = banner.desktop_url || banner.image || "logo01.webp";
                 const bannerTitle = banner.title || banner.name || 'Banner';
                 
                 slidesHtml += `
@@ -301,7 +302,7 @@
                 const discount = parseFloat(p.discount) || 0;
                 const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
                 
-                // Ambil gambar utama produk
+                // Sinkronisasi pengambilan gambar dari database panel (array, JSON string, atau string biasa)
                 let displayImage = 'logo01.webp';
                 if (Array.isArray(p.images) && p.images.length > 0) {
                     displayImage = p.images[0];
@@ -353,7 +354,7 @@
             const discount = parseFloat(p.discount) || 0;
             const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
             
-            // Mengatasi multi-foto dari database (mendukung array, JSON string, atau string koma)
+            // Sinkronisasi gambar modal (mendukung berbagai format penyimpanan dari panel)
             if (Array.isArray(p.images) && p.images.length > 0) {
                 currentImages = p.images;
             } else if (typeof p.images === 'string' && p.images.trim() !== '') {
@@ -369,7 +370,6 @@
 
             const productCondition = p.condition || 'New';
 
-            // Set gambar utama
             document.getElementById('modalImage').src = currentImages[0];
             document.getElementById('modalTitle').innerText = p.name || '-';
             document.getElementById('modalPrice').innerText = `Rp ${finalPrice.toLocaleString('id-ID')}`;
@@ -387,7 +387,7 @@
 
             document.getElementById('modalDesc').innerText = p.description || 'Tidak ada deskripsi.';
             
-            // Render Thumbnail Galeri Multi-Foto agar terlihat rapi dan jelas
+            // Render Thumbnail Galeri Multi-Foto
             const galleryContainer = document.getElementById('modalGallery');
             galleryContainer.innerHTML = '';
             if (currentImages.length > 1) {
@@ -407,7 +407,7 @@
                 galleryContainer.classList.add('hidden');
             }
 
-            // Render Pilihan Ukuran (Size Picker)
+            // Render Pilihan Ukuran (Size Picker) yang sinkron dengan panel
             const sizeContainer = document.getElementById('modalSizeContainer');
             sizeContainer.innerHTML = '';
             let sizes = [];
@@ -456,7 +456,6 @@
             }, 10);
         }
 
-        // Fungsi pembentuk format pesan WhatsApp agar rapi dan tidak berantakan
         function updateWhatsAppLink(p, finalPrice) {
             const waNumber = "6287783098165";
             const activeImage = document.getElementById('modalImage').src;
