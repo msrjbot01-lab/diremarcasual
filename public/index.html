@@ -161,6 +161,7 @@
     </footer>
 
     <!-- SCRIPT -->
+    <!-- SCRIPT -->
     <script>
         const API_BASE = "https://round-surf-5635.trbmaster.workers.dev/api";
         let allProducts = [];
@@ -173,7 +174,6 @@
                 const response = await fetch(`${API_BASE}/banners`);
                 if (!response.ok) throw new Error("Gagal mengambil banner");
                 const data = await response.json();
-                
                 activeBanners = Array.isArray(data) ? data.filter(b => b.status === 'active' || !b.status) : [];
             } catch (error) {
                 console.error("Gagal memuat banner dari server:", error);
@@ -181,22 +181,18 @@
             }
 
             if (activeBanners.length === 0) {
-                activeBanners = [
-                    {
-                        title: "Special Sneaker Drop",
-                        image: "logo01.webp",
-                        link: "#katalog"
-                    }
-                ];
+                activeBanners = [{
+                    title: "Special Sneaker Drop",
+                    image: "logo01.webp",
+                    link: "#katalog"
+                }];
             }
-
             renderBanners();
         }
 
         function renderBanners() {
             const slider = document.getElementById('bannerSlider');
             const dotsContainer = document.getElementById('sliderDots');
-            
             if (!slider) return;
             
             let slidesHtml = '';
@@ -211,7 +207,6 @@
                         <img src="${imageUrl}" alt="${bannerTitle}" class="w-full h-full object-cover">
                     </div>
                 `;
-
                 dotsHtml += `
                     <button onclick="currentSlide(${idx})" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${idx === currentSlideIndex ? 'bg-white' : 'bg-white/40'} transition cursor-pointer"></button>
                 `;
@@ -266,7 +261,13 @@
             try {
                 const response = await fetch(`${API_BASE}/products`);
                 if (!response.ok) throw new Error("Gagal mengambil produk");
-                allProducts = await response.json();
+                
+                const data = await response.json();
+                console.log("Data Produk dari API:", data);
+
+                // Pengaman struktur data (mendukung array langsung maupun objek terbungkus)
+                allProducts = Array.isArray(data) ? data : (data.products || data.data || []);
+                
                 renderProducts(allProducts);
             } catch (error) {
                 console.error(error);
@@ -294,6 +295,8 @@
                 const rawPrice = parseFloat(p.price) || 0;
                 const discount = parseFloat(p.discount) || 0;
                 const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
+                const productImage = p.image || p.image_url || 'logo01.webp';
+                const productCondition = p.condition || 'New';
 
                 const card = document.createElement('div');
                 card.className = "group bg-white border border-gray-200/80 rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition duration-300 flex flex-col";
@@ -301,13 +304,13 @@
 
                 card.innerHTML = `
                     <div class="relative w-full h-44 sm:h-56 bg-gray-100 overflow-hidden">
-                        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <img src="${productImage}" alt="${p.name || 'Sneakers'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         ${discount > 0 ? `<span class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-red-600 text-white text-[9px] sm:text-[10px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded shadow">-${discount}%</span>` : ''}
-                        <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-gray-900 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 sm:py-1 rounded uppercase tracking-wider">${p.condition}</span>
+                        <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-gray-900 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 sm:py-1 rounded uppercase tracking-wider">${productCondition}</span>
                     </div>
                     <div class="p-3 sm:p-5 flex flex-col flex-grow justify-between">
                         <div>
-                            <h3 class="font-bold text-xs sm:text-base text-gray-900 group-hover:text-gray-600 transition truncate">${p.name}</h3>
+                            <h3 class="font-bold text-xs sm:text-base text-gray-900 group-hover:text-gray-600 transition truncate">${p.name || 'Sneakers'}</h3>
                         </div>
                         <div class="mt-3 pt-2 sm:mt-4 sm:pt-3 border-t border-gray-100 flex items-center justify-between">
                             <div>
@@ -326,7 +329,7 @@
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
-            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(keyword));
+            const filtered = allProducts.filter(p => (p.name || '').toLowerCase().includes(keyword));
             renderProducts(filtered);
         });
 
@@ -334,24 +337,26 @@
             const rawPrice = parseFloat(p.price) || 0;
             const discount = parseFloat(p.discount) || 0;
             const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
+            const productImage = p.image || p.image_url || 'logo01.webp';
+            const productCondition = p.condition || 'New';
 
-            document.getElementById('modalImage').src = p.image;
-            document.getElementById('modalTitle').innerText = p.name;
+            document.getElementById('modalImage').src = productImage;
+            document.getElementById('modalTitle').innerText = p.name || '-';
             document.getElementById('modalPrice').innerText = `Rp ${finalPrice.toLocaleString('id-ID')}`;
             document.getElementById('modalOldPrice').innerText = discount > 0 ? `Rp ${rawPrice.toLocaleString('id-ID')}` : '';
             document.getElementById('modalSize').innerText = p.size || '-';
             document.getElementById('modalDesc').innerText = p.description || 'Tidak ada deskripsi.';
             
             const condBadge = document.getElementById('modalCondition');
-            condBadge.innerText = p.condition;
+            condBadge.innerText = productCondition;
             condBadge.className = `absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider bg-gray-900 text-white`;
 
             const waNumber = "6287783098165";
             const message = `Halo Kak, saya tertarik untuk memesan produk ini di *Diremar Casual*:\n\n` +
-                            `📦 *Nama Barang:* ${p.name}\n` +
+                            `📦 *Nama Barang:* ${p.name || '-'}\n` +
                             `🏷️ *Harga:* Rp ${finalPrice.toLocaleString('id-ID')}\n` +
-                            `📏 *Ukuran:* ${p.size}\n` +
-                            `🖼️ *Foto Produk:* ${p.image}\n\n` +
+                            `📏 *Ukuran:* ${p.size || '-'}\n` +
+                            `🖼️ *Foto Produk:* ${productImage}\n\n` +
                             `Apakah barang ini masih tersedia?`;
             
             document.getElementById('modalWaBtn').href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
