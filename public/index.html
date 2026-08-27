@@ -123,9 +123,13 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="grid grid-cols-1 md:grid-cols-2 overflow-y-auto">
-                <div class="relative bg-gray-100 h-56 sm:h-full flex items-center justify-center shrink-0">
-                    <img id="modalImage" src="" alt="" class="w-full h-full object-cover">
-                    <span id="modalCondition" class="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow"></span>
+                <div class="p-4 bg-gray-100 flex flex-col gap-3 shrink-0">
+                    <div class="relative bg-gray-200 h-56 sm:h-64 rounded-xl overflow-hidden flex items-center justify-center">
+                        <img id="modalImage" src="" alt="" class="w-full h-full object-cover">
+                        <span id="modalCondition" class="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow"></span>
+                    </div>
+                    <!-- GALERI THUMBNAIL MULTI-FOTO -->
+                    <div id="modalGallery" class="flex gap-2 overflow-x-auto pb-1"></div>
                 </div>
                 <div class="p-5 sm:p-8 flex flex-col justify-between">
                     <div>
@@ -133,13 +137,17 @@
                         <div class="flex items-baseline gap-3 mb-3">
                             <span id="modalPrice" class="text-xl sm:text-2xl font-extrabold text-gray-900"></span>
                             <span id="modalOldPrice" class="text-xs sm:text-sm text-gray-400 line-through"></span>
+                            <span id="modalDiscountBadge" class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-md hidden"></span>
                         </div>
+                        
+                        <!-- PILIHAN UKURAN (SIZE PICKER) -->
                         <div class="mb-3">
-                            <span class="text-[11px] text-gray-500 block mb-1">Ukuran Tersedia:</span>
-                            <span id="modalSize" class="inline-block bg-gray-100 text-gray-800 text-xs sm:text-sm font-semibold px-3 py-1 rounded-lg border border-gray-200"></span>
+                            <span class="text-[11px] text-gray-500 font-semibold block mb-1.5">Pilih Ukuran (Size):</span>
+                            <div id="modalSizeContainer" class="flex flex-wrap gap-2"></div>
                         </div>
+
                         <div class="mb-5">
-                            <span class="text-[11px] text-gray-500 block mb-1">Deskripsi Produk:</span>
+                            <span class="text-[11px] text-gray-500 font-semibold block mb-1">Deskripsi Produk:</span>
                             <p id="modalDesc" class="text-xs sm:text-sm text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-200 leading-relaxed"></p>
                         </div>
                     </div>
@@ -161,13 +169,14 @@
     </footer>
 
     <!-- SCRIPT -->
-    <!-- SCRIPT -->
     <script>
         const API_BASE = "https://round-surf-5635.trbmaster.workers.dev/api";
         let allProducts = [];
         let currentSlideIndex = 0;
         let activeBanners = [];
         let slideInterval;
+        let selectedSize = '';
+        let currentImages = [];
 
         async function fetchBanners() {
             try {
@@ -263,11 +272,7 @@
                 if (!response.ok) throw new Error("Gagal mengambil produk");
                 
                 const data = await response.json();
-                console.log("Data Produk dari API:", data);
-
-                // Pengaman struktur data (mendukung array langsung maupun objek terbungkus)
                 allProducts = Array.isArray(data) ? data : (data.products || data.data || []);
-                
                 renderProducts(allProducts);
             } catch (error) {
                 console.error(error);
@@ -295,7 +300,17 @@
                 const rawPrice = parseFloat(p.price) || 0;
                 const discount = parseFloat(p.discount) || 0;
                 const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
-                const productImage = p.image || p.image_url || 'logo01.webp';
+                
+                // Ambil gambar utama produk
+                let displayImage = 'logo01.webp';
+                if (Array.isArray(p.images) && p.images.length > 0) {
+                    displayImage = p.images[0];
+                } else if (typeof p.images === 'string' && p.images.trim() !== '') {
+                    try { const parsed = JSON.parse(p.images); if(parsed.length > 0) displayImage = parsed[0]; } catch(e) { displayImage = p.images.split(',')[0].trim(); }
+                } else {
+                    displayImage = p.image || p.image_url || 'logo01.webp';
+                }
+
                 const productCondition = p.condition || 'New';
 
                 const card = document.createElement('div');
@@ -304,7 +319,7 @@
 
                 card.innerHTML = `
                     <div class="relative w-full h-44 sm:h-56 bg-gray-100 overflow-hidden">
-                        <img src="${productImage}" alt="${p.name || 'Sneakers'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <img src="${displayImage}" alt="${p.name || 'Sneakers'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         ${discount > 0 ? `<span class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-red-600 text-white text-[9px] sm:text-[10px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded shadow">-${discount}%</span>` : ''}
                         <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-gray-900 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 sm:py-1 rounded uppercase tracking-wider">${productCondition}</span>
                     </div>
@@ -337,29 +352,100 @@
             const rawPrice = parseFloat(p.price) || 0;
             const discount = parseFloat(p.discount) || 0;
             const finalPrice = discount > 0 ? rawPrice - (rawPrice * discount / 100) : rawPrice;
-            const productImage = p.image || p.image_url || 'logo01.webp';
+            
+            // Mengatasi multi-foto dari database (mendukung array, JSON string, atau string koma)
+            if (Array.isArray(p.images) && p.images.length > 0) {
+                currentImages = p.images;
+            } else if (typeof p.images === 'string' && p.images.trim() !== '') {
+                try { 
+                    currentImages = JSON.parse(p.images); 
+                    if(!Array.isArray(currentImages)) throw new Error();
+                } catch(e) { 
+                    currentImages = p.images.split(',').map(s => s.trim()).filter(Boolean); 
+                }
+            } else {
+                currentImages = [p.image || p.image_url || 'logo01.webp'];
+            }
+
             const productCondition = p.condition || 'New';
 
-            document.getElementById('modalImage').src = productImage;
+            // Set gambar utama
+            document.getElementById('modalImage').src = currentImages[0];
             document.getElementById('modalTitle').innerText = p.name || '-';
             document.getElementById('modalPrice').innerText = `Rp ${finalPrice.toLocaleString('id-ID')}`;
-            document.getElementById('modalOldPrice').innerText = discount > 0 ? `Rp ${rawPrice.toLocaleString('id-ID')}` : '';
-            document.getElementById('modalSize').innerText = p.size || '-';
+            
+            const oldPriceEl = document.getElementById('modalOldPrice');
+            const discBadgeEl = document.getElementById('modalDiscountBadge');
+            if (discount > 0) {
+                oldPriceEl.innerText = `Rp ${rawPrice.toLocaleString('id-ID')}`;
+                discBadgeEl.innerText = `Diskon ${discount}%`;
+                discBadgeEl.classList.remove('hidden');
+            } else {
+                oldPriceEl.innerText = '';
+                discBadgeEl.classList.add('hidden');
+            }
+
             document.getElementById('modalDesc').innerText = p.description || 'Tidak ada deskripsi.';
             
+            // Render Thumbnail Galeri Multi-Foto agar terlihat rapi dan jelas
+            const galleryContainer = document.getElementById('modalGallery');
+            galleryContainer.innerHTML = '';
+            if (currentImages.length > 1) {
+                galleryContainer.classList.remove('hidden');
+                currentImages.forEach((imgUrl, idx) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgUrl;
+                    thumb.className = `w-14 h-14 object-cover rounded-lg cursor-pointer border-2 transition ${idx === 0 ? 'border-emerald-600 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`;
+                    thumb.onclick = () => {
+                        document.getElementById('modalImage').src = imgUrl;
+                        Array.from(galleryContainer.children).forEach(el => el.classList.remove('border-emerald-600', 'opacity-100'));
+                        thumb.classList.add('border-emerald-600', 'opacity-100');
+                    };
+                    galleryContainer.appendChild(thumb);
+                });
+            } else {
+                galleryContainer.classList.add('hidden');
+            }
+
+            // Render Pilihan Ukuran (Size Picker)
+            const sizeContainer = document.getElementById('modalSizeContainer');
+            sizeContainer.innerHTML = '';
+            let sizes = [];
+            if (Array.isArray(p.sizes)) {
+                sizes = p.sizes;
+            } else if (typeof p.size === 'string') {
+                sizes = p.size.split(/[,/]/).map(s => s.trim()).filter(Boolean);
+            } else if (p.size) {
+                sizes = [String(p.size)];
+            }
+
+            selectedSize = sizes.length > 0 ? sizes[0] : '-';
+
+            if (sizes.length > 0) {
+                sizes.forEach((sz, idx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.innerText = sz;
+                    btn.className = `px-3.5 py-1.5 text-xs font-bold rounded-xl border transition cursor-pointer ${idx === 0 ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-800 border-gray-300 hover:border-gray-500'}`;
+                    btn.onclick = () => {
+                        selectedSize = sz;
+                        Array.from(sizeContainer.children).forEach(b => {
+                            b.className = "px-3.5 py-1.5 text-xs font-bold rounded-xl border bg-white text-gray-800 border-gray-300 hover:border-gray-500 transition cursor-pointer";
+                        });
+                        btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-xl border bg-gray-900 text-white border-gray-900 transition cursor-pointer";
+                        updateWhatsAppLink(p, finalPrice);
+                    };
+                    sizeContainer.appendChild(btn);
+                });
+            } else {
+                sizeContainer.innerHTML = '<span class="text-xs text-gray-500">Ukuran tidak tersedia</span>';
+            }
+
             const condBadge = document.getElementById('modalCondition');
             condBadge.innerText = productCondition;
-            condBadge.className = `absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider bg-gray-900 text-white`;
+            condBadge.className = `absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider bg-gray-900 text-white shadow`;
 
-            const waNumber = "6287783098165";
-            const message = `Halo Kak, saya tertarik untuk memesan produk ini di *Diremar Casual*:\n\n` +
-                            `📦 *Nama Barang:* ${p.name || '-'}\n` +
-                            `🏷️ *Harga:* Rp ${finalPrice.toLocaleString('id-ID')}\n` +
-                            `📏 *Ukuran:* ${p.size || '-'}\n` +
-                            `🖼️ *Foto Produk:* ${productImage}\n\n` +
-                            `Apakah barang ini masih tersedia?`;
-            
-            document.getElementById('modalWaBtn').href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            updateWhatsAppLink(p, finalPrice);
 
             const modal = document.getElementById('productModal');
             modal.classList.remove('hidden');
@@ -368,6 +454,22 @@
                 document.getElementById('modalContent').classList.remove('scale-95');
                 document.getElementById('modalContent').classList.add('scale-100');
             }, 10);
+        }
+
+        // Fungsi pembentuk format pesan WhatsApp agar rapi dan tidak berantakan
+        function updateWhatsAppLink(p, finalPrice) {
+            const waNumber = "6287783098165";
+            const activeImage = document.getElementById('modalImage').src;
+            
+            const message = `Halo Diremar Casual, saya tertarik dengan produk ini:\n\n` +
+                            `• Nama Produk: ${p.name || '-'}\n` +
+                            `• Harga: Rp ${finalPrice.toLocaleString('id-ID')}\n` +
+                            `• Ukuran (Size): ${selectedSize}\n` +
+                            `• Kondisi: ${p.condition || 'New'}\n` +
+                            `• Link Foto: ${activeImage}\n\n` +
+                            `Mohon infokan ketersediaannya. Terima kasih!`;
+            
+            document.getElementById('modalWaBtn').href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
         }
 
         function closeModal() {
